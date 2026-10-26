@@ -1,27 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      sans-serif;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
+:root {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --color-brand-teal: #2dd4bf;
+  --color-brand-navy: #1e3a5f;
+  --color-brand-dark: #090d16;
+  --color-brand-blue: #3b82f6;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Strict icon sizing rules to prevent any oversized SVG scaling */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.text-balance {
+  text-wrap: balance;
 }

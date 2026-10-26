@@ -50,6 +50,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Configure Turbopack root directory
+  turbopack: { root: "." },
+
   // Apply security headers to all routes
   async headers() {
     return [

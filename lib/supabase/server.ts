@@ -2,10 +2,18 @@
 // Uses the service-role key — NEVER import this in client components
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
+function sanitize(val?: string): string {
+  return (val ?? "")
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .replace(/\/+$/, "")
+    .replace(/\/rest\/v1\/?$/i, "");
+}
+
 // Service-role client: bypasses RLS — use only for trusted server operations
 export function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = sanitize(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const key = sanitize(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   if (!url || !key) {
     throw new Error(
@@ -24,8 +32,8 @@ export function createServiceClient() {
 
 // Anon client for server-side operations that should respect RLS
 export function createAnonServerClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = sanitize(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const key = sanitize(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   if (!url || !key) {
     throw new Error(

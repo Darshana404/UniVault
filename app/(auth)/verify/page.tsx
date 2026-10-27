@@ -33,15 +33,34 @@ export default function VerifyPage() {
   const focusInput = (i: number) => inputRefs.current[i]?.focus();
 
   // Entry guard: redirect to /login if there's no pending email
+  // useEffect(() => {
+  //   const pending = sessionStorage.getItem(EMAIL_KEY);
+  //   if (!pending) {
+  //     router.replace("/login");
+  //     return;
+  //   }
+  //   setEmail(pending);
+  //   setTimeout(() => focusInput(0), 100);
+  // }, [router]);
+
+  
+  // Entry guard: redirect to /login if there's no pending email
   useEffect(() => {
     const pending = sessionStorage.getItem(EMAIL_KEY);
+
     if (!pending) {
       router.replace("/login");
       return;
     }
-    setEmail(pending);
-    setTimeout(() => focusInput(0), 100);
+
+    const timer = setTimeout(() => {
+      setEmail(pending);
+      focusInput(0);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [router]);
+
 
   // Resend cooldown countdown timer
   useEffect(() => {

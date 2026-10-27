@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --dir app --dir components --dir lib --dir hooks --dir types",
+    "lint": "eslint app components lib hooks types",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

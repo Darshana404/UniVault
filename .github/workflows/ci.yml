@@ -51,30 +51,25 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Debug model config hash
-        run: |
-          sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
-          grep 'Xenova/all-MiniLM-L6-v2/config.json' models/MODEL_MANIFEST.txt
-
-      - name: Debug model config contents
+ -    - name: Debug model file hashes
         run: |
           echo "=== Git commit ==="
           git rev-parse HEAD
 
-          echo "=== File contents in CI ==="
-          cat models/Xenova/all-MiniLM-L6-v2/config.json
+          echo "=== Manifest hashes ==="
+          grep -E 'config.json|special_tokens_map.json' models/MODEL_MANIFEST.txt
 
-          echo "=== Git-tracked file contents ==="
-          git show HEAD:models/Xenova/all-MiniLM-L6-v2/config.json
+          echo "=== Actual CI file hashes ==="
+          sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
+          sha256sum models/Xenova/all-MiniLM-L6-v2/special_tokens_map.json
+
+          echo "=== Git-tracked file hashes ==="
+          git show HEAD:models/Xenova/all-MiniLM-L6-v2/config.json | sha256sum
+          git show HEAD:models/Xenova/all-MiniLM-L6-v2/special_tokens_map.json | sha256sum
 
           echo "=== File attributes ==="
           git check-attr -a -- models/Xenova/all-MiniLM-L6-v2/config.json
-
-          echo "=== Hashes ==="
-          sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
-          git show HEAD:models/Xenova/all-MiniLM-L6-v2/config.json | sha256sum
-
-
+          git check-attr -a -- models/Xenova/all-MiniLM-L6-v2/special_tokens_map.json
 
       - name: Unit tests
         run: npx vitest run --passWithNoTests

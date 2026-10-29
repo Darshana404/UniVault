@@ -460,7 +460,7 @@ export const SUBJECT_TAXONOMY: SubjectDefinition[] = [
     ],
   },
   {
-    name: "Embedded System Architectures",
+    name: "Embedded System Architecture",
     minMatches: 2,
     keywords: [
       "embedded system", "rtos", "real time operating system",

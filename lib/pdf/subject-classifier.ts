@@ -168,6 +168,6 @@ export function classifySubject(
   return {
     passed: false,
     matchCount: declaredHits,
-    reason: `This document does not appear to belong to "${declared.name}" (${declaredHits} relevant keyword(s) found, minimum ${declared.minMatches}).`,
+    reason: `This document does not appear to belong to the course "${declared.name}" (${declaredHits} relevant keyword(s) found, minimum ${declared.minMatches}).`,
   };
 }

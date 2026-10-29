@@ -1,2 +1,1 @@
 models/**/*.onnx filter=lfs diff=lfs merge=lfs -text
-/models/Xenova/all-MiniLM-L6-v2/config.json text eol=crlf

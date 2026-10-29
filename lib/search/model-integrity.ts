@@ -1,5 +1,3 @@
-// Verifies every vendored model file against models/MODEL_MANIFEST.txt
-// before the model is loaded. Throws on any mismatch or missing file.
 import { createHash } from "crypto";
 import fs from "fs";
 import path from "path";
@@ -21,7 +19,9 @@ export function verifyModelFiles(): void {
 
   for (const raw of lines) {
     const line = raw.trim();
-    if (!line || line.startsWith("#") || line.startsWith("revision:")) continue;
+    if (!line || line.startsWith("#") || line.startsWith("revision:")) {
+      continue;
+    }
 
     const [expected, relPath] = line.split(/\s+/, 2);
     if (!expected || !relPath) {
@@ -33,13 +33,24 @@ export function verifyModelFiles(): void {
       throw new Error(`Model file missing: ${relPath}`);
     }
 
+    const contents = fs.readFileSync(file);
+
+    // Normalize line endings for text files so hashes are
+    // consistent across Windows and Linux.
+    const isTextFile = /\.(json|txt|jsonl|vocab|merges)$/i.test(relPath);
+
+    const hashInput = isTextFile
+      ? contents.toString("utf8").replace(/\r\n/g, "\n").replace(/\r/g, "\n")
+      : contents;
+
     const actual = createHash("sha256")
-      .update(fs.readFileSync(file))
+      .update(hashInput)
       .digest("hex");
 
     if (actual !== expected.toLowerCase()) {
       throw new Error(`Model file hash mismatch: ${relPath}`);
     }
+
     checked++;
   }
 

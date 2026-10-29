@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { VALID_SUBJECTS } from "@/lib/pdf/taxonomy";
 import { formatFileSize } from "@/lib/utils/format";
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
-const MIN_FILE_SIZE = 100 * 1024;
+import { MIN_FILE_SIZE, MAX_FILE_SIZE } from "@/lib/pdf/limits";
 
 export function UploadForm() {
   const router = useRouter();
@@ -29,9 +28,9 @@ export function UploadForm() {
 
     if (!file) newErrors.file = "Please select a PDF file.";
     else if (file.size > MAX_FILE_SIZE)
-      newErrors.file = `File too large. Maximum is 50 MB.`;
+      newErrors.file = `File too large. Maximum is ${formatFileSize(MAX_FILE_SIZE)}.`;
     else if (file.size < MIN_FILE_SIZE)
-      newErrors.file = `File too small. Minimum is 100 KB.`;
+      newErrors.file = `File too small. Minimum is ${formatFileSize(MIN_FILE_SIZE)}.`;
     else if (!file.name.toLowerCase().endsWith(".pdf"))
       newErrors.file = "Only PDF files are accepted.";
 
@@ -179,7 +178,7 @@ export function UploadForm() {
                 or drag and drop
               </p>
               <p className="text-xs text-slate-500">
-                PDF only · 100 KB – 50 MB
+                PDF only · {formatFileSize(MIN_FILE_SIZE)} – {formatFileSize(MAX_FILE_SIZE)}
               </p>
             </div>
           )}

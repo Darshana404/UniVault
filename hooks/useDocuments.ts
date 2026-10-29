@@ -67,12 +67,30 @@ async function deleteDocument(id: string): Promise<void> {
 }
 
 // Hooks
-export function useDocuments(params: DocumentSearchParams) {
+export function useDocuments(
+  params: DocumentSearchParams,
+  enabled: boolean = true
+) {
   return useQuery({
     queryKey: documentKeys.list(params),
     queryFn: () => fetchDocuments(params),
+    enabled,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+}
+
+export function useSemanticSearch(
+  params: DocumentSearchParams,
+  enabled: boolean = true
+) {
+  const query = params.q?.trim() ?? "";
+  return useQuery({
+    queryKey: [...documentKeys.list(params), "semantic"] as const,
+    queryFn: () => fetchDocuments({ ...params, semantic: true }),
+    enabled: enabled && query.length >= 3,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 2,
   });
 }
 
@@ -104,4 +122,3 @@ export function useDeleteDocument() {
     },
   });
 }
-

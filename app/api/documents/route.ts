@@ -7,6 +7,8 @@ import {
 import { requireAuth } from "@/lib/middleware/auth-guard";
 import { AuthenticationError } from "@/lib/api/errors";
 import { keywordSearch } from "@/lib/search/keyword";
+import { semanticSearch } from "@/lib/search/semantic";
+import { generateAndStoreEmbedding } from "@/lib/search/embedding-service";
 import { DocumentSearchSchema, UploadMetadataSchema } from "@/lib/api/schemas";
 import { validatePDF } from "@/lib/pdf/validator";
 import { uploadPDFToStorage, deletePDFFromStorage } from "@/lib/storage/documents";
@@ -44,10 +46,32 @@ export async function GET(request: NextRequest) {
       return errorResponse(firstError, 400);
     }
 
-    const { q, subject, sort, order, page, limit } = parsed.data;
-    const result = await keywordSearch({ q, subject, sort, order, page, limit });
+    const { q, subject, sort, order, page, limit, semantic } = parsed.data;
 
-    return successResponse({ ...result, searchType: "keyword" });
+    // Use semantic search when requested and a query is provided
+    if (semantic && q) {
+      const result = await semanticSearch({
+        query: q,
+        subject,
+        page,
+        limit,
+      });
+      return successResponse(result);
+    }
+
+    const result = await keywordSearch({
+      q,
+      subject,
+      sort,
+      order,
+      page,
+      limit,
+    });
+
+    return successResponse({
+      ...result,
+      searchType: "keyword",
+    });
   } catch (err) {
     if (err instanceof AuthenticationError) {
       return errorResponse(err.message, 401);
@@ -216,11 +240,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create a pending embedding record for Phase 5
-    await supabase.from("document_embeddings").insert({
-      document_id: document.id,
-      embedding_status: "PENDING",
-    });
+    // Trigger embedding generation
+    // Non-blocking: document is approved even if this fails
+    // generateAndStoreEmbedding handles its own error logging
+    generateAndStoreEmbedding({
+      documentId: document.id,
+      title: metadata.title,
+      subject: metadata.subject,
+      description: metadata.description,
+      extractedText: validationResult.extractedText,
+    }).catch((err) =>
+      console.error("[Upload] Embedding generation error:", err)
+    );
 
     return successResponse(
       {

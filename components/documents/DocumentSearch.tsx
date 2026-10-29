@@ -87,23 +87,21 @@ export function DocumentSearch({
   placeholder = "Search documents…",
 }: DocumentSearchProps) {
   const [local, setLocal] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
 
-  // Track the latest value received from the parent.
-  const [previousValue, setPreviousValue] = useState(value);
-
-  // Synchronize when the parent changes the search value.
-  if (value !== previousValue) {
-    setPreviousValue(value);
+  // Sync external value changes without calling setState inside an effect.
+  if (value !== prevValue) {
+    setPrevValue(value);
     setLocal(value);
   }
 
-  // Debounce search updates by 300ms.
+  // Debounce search input by 350ms.
   useEffect(() => {
     if (local === value) return;
 
     const timer = setTimeout(() => {
       onChange(local);
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [local, value, onChange]);

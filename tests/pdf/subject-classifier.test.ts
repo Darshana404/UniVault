@@ -1,60 +1,45 @@
 import { describe, it, expect } from "vitest";
 import { classifySubject } from "@/lib/pdf/subject-classifier";
 
-const CS_TEXT = `
-  This document covers algorithms, data structures, and programming concepts.
-  We examine sorting algorithms including quicksort, mergesort, and binary search.
-  Object-oriented programming with classes and functions is discussed.
-  The complexity analysis uses Big-O notation for arrays and linked lists.
-  Recursive algorithms and dynamic programming are also covered.
-  Database design and network protocols are introduced briefly.
-`;
+const CSE_CORE_TEXT =
+  "This unit covers the data structure of arrays and linked lists. " +
+  "We study algorithm complexity, the operating system scheduler, and compiler design. " +
+  "Recursion is discussed with examples.";
 
-const MATH_TEXT = `
-  This document covers differential calculus and integral theorems.
-  We examine polynomial equations, vector spaces, and matrix algebra.
-  Linear transformations and eigenvalues are discussed in detail.
-  The proof of the fundamental theorem uses limit definitions.
-  Probability distributions and statistical inference are introduced.
-  Trigonometric functions and logarithmic series are also covered.
-`;
+const ECON_TEXT =
+  "The demand curve and supply curve determine price. " +
+  "Elasticity measures responsiveness. A monopoly sets prices above marginal cost. " +
+  "Inflation and GDP growth are macroeconomic indicators.";
 
-describe("classifySubject", () => {
-  it("passes text that matches the declared subject", () => {
-    const result = classifySubject(CS_TEXT, "Computer Science", "CS Notes");
-    expect(result.passed).toBe(true);
-    expect(result.matchedSubject).toBe("Computer Science");
-    expect(result.matchCount).toBeGreaterThan(0);
+describe("classifySubject (programme-based)", () => {
+  it("passes CSE text declared as B.Tech CSE (Core)", () => {
+    const r = classifySubject(CSE_CORE_TEXT, "B.Tech CSE (Core)", "Data Structures Notes");
+    expect(r.passed).toBe(true);
+    expect(r.matchedSubject).toBe("B.Tech CSE (Core)");
   });
 
-  it("passes math text declared as Mathematics", () => {
-    const result = classifySubject(MATH_TEXT, "Mathematics", "Math Notes");
-    expect(result.passed).toBe(true);
+  it("passes economics text declared as B.Sc Economics", () => {
+    const r = classifySubject(ECON_TEXT, "B.Sc Economics", "Micro Notes");
+    expect(r.passed).toBe(true);
   });
 
-  it("fails when declared subject does not match content", () => {
-    const result = classifySubject(
-      CS_TEXT,
-      "Biology",
-      "Definitely not biology"
-    );
-    expect(result.passed).toBe(false);
-    expect(result.reason).toBeTruthy();
+  it("rejects economics text declared as CSE and names the right programme", () => {
+    const r = classifySubject(ECON_TEXT, "B.Tech CSE (Core)", "Notes");
+    expect(r.passed).toBe(false);
+    expect(r.reason).toContain("B.Sc Economics");
   });
 
-  it("fails with an unknown subject", () => {
-    const result = classifySubject(
-      CS_TEXT,
-      "InvalidSubject",
-      "Some title"
-    );
-    expect(result.passed).toBe(false);
+  it("rejects an unknown programme", () => {
+    const r = classifySubject(CSE_CORE_TEXT, "Mathematics", "Notes");
+    expect(r.passed).toBe(false);
   });
 
-  it("includes match count in the result", () => {
-    const result = classifySubject(CS_TEXT, "Computer Science", "CS Notes");
-    expect(typeof result.matchCount).toBe("number");
-    expect(result.matchCount).toBeGreaterThan(0);
+  it("passes AI/ML notes declared as a cyber security programme", () => {
+    const AI_TEXT =
+      "This unit covers machine learning and neural network training. " +
+      "We discuss supervised learning, gradient descent, and random forest classifiers. " +
+      "Deep learning models are evaluated on held-out data.";
+    const r = classifySubject(AI_TEXT, "B.Tech CSE (Cyber Security)", "ML Notes");
+    expect(r.passed).toBe(true);
   });
 });
-

@@ -1,5 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import type { DocumentListItem, PaginationMeta } from "@/types/documents";
+import { VALID_SUBJECTS } from "../pdf/taxonomy";
 
 export interface KeywordSearchOptions {
   q?: string;
@@ -13,6 +14,12 @@ export interface KeywordSearchOptions {
 export interface KeywordSearchResult {
   data: DocumentListItem[];
   pagination: PaginationMeta;
+}
+
+// Sanitize user search input to prevent PostgREST grammar injection
+function sanitizeSearchTerm(term: string): string {
+  // Strip characters that break PostgREST or filter syntax: commas, parentheses, wildcards, backslashes
+  return term.replace(/[,()%\\]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 export async function keywordSearch(
@@ -50,12 +57,14 @@ export async function keywordSearch(
     )
     .eq("validation_status", "APPROVED");
 
-  // Full-text search on title and description
+  // Full-text search on title and description with sanitized term
   if (options.q && options.q.trim()) {
-    const searchTerm = options.q.trim();
-    query = query.or(
-      `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`
-    );
+    const searchTerm = sanitizeSearchTerm(options.q);
+    if (searchTerm) {
+      query = query.or(
+        `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`
+      );
+    }
   }
 
   // Subject filter
@@ -91,24 +100,18 @@ export async function keywordSearch(
 
   return {
     data: documents,
-    pagination: { page, limit, total, totalPages },
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
   };
 }
 
-// Get all unique subjects for filtering UI
+// Fetch all distinct subjects from approved documents
 export async function getSubjects(): Promise<string[]> {
-  const supabase = createServiceClient();
-
-  const { data, error } = await supabase
-    .from("documents")
-    .select("subject")
-    .eq("validation_status", "APPROVED")
-    .order("subject", { ascending: true });
-
-  if (error) return [];
-
-  const unique = [...new Set((data ?? []).map((d) => d.subject))];
-  return unique;
+  return [...VALID_SUBJECTS];
 }
 
 // Get a single approved document by ID
@@ -195,4 +198,3 @@ export async function getDocumentByIdForOwner(
     uploader_email: users?.email,
   } as DocumentListItem;
 }
-

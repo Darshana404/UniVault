@@ -2,9 +2,12 @@ import { describe, it, expect } from "vitest";
 import {
   validatePDFFormat,
   computeContentHash,
+} from "@/lib/pdf/format-validator";
+
+import {
   MIN_FILE_SIZE,
   MAX_FILE_SIZE,
-} from "@/lib/pdf/format-validator";
+} from "@/lib/pdf/limits";
 
 // Helper: create a buffer with PDF magic bytes
 function makePDFBuffer(size: number): Buffer {
@@ -28,7 +31,7 @@ describe("validatePDFFormat", () => {
   });
 
   it("rejects a file that is too small", () => {
-    const buf = makePDFBuffer(50 * 1024); // 50 KB — below 100 KB min
+    const buf = makePDFBuffer(30 * 1024); // 30 KB — below 100 KB min
     const result = validatePDFFormat(buf, "test.pdf");
     expect(result.valid).toBe(false);
     expect(result.reason).toContain("too small");

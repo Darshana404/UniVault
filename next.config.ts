@@ -53,6 +53,12 @@ const nextConfig: NextConfig = {
   // Configure Turbopack root directory
   turbopack: { root: "." },
 
+  serverExternalPackages: [
+    "@huggingface/transformers",
+    "onnxruntime-node",
+    "sharp",
+  ],
+
   // Apply security headers to all routes
   async headers() {
     return [

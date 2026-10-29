@@ -46,7 +46,7 @@ export const config = {
   },
   embedding: {
     provider: optionalEnv("EMBEDDING_PROVIDER", "openai"),
-    apiKey: optionalEnv("EMBEDDING_API_KEY", ""),
+    apiKey: process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || "",
     model: optionalEnv("EMBEDDING_MODEL", "text-embedding-3-small"),
     dimensions: parseInt(optionalEnv("EMBEDDING_DIMENSIONS", "1536"), 10),
   },

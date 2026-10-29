@@ -1,0 +1,81 @@
+/* ==========================================================================
+   styles/pages/home.css — Home page specific styles only
+   (recents row, categories grid, upload button placement)
+   ========================================================================== */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-gap) * 1.5);
+  width: 100%;
+}
+
+.home__section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.home__upload-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--spacing-gap);
+}
+
+.home__btn-upload,
+.btn--upload {
+  width: min(100%, 320px);
+  margin: 0 var(--spacing-page) var(--spacing-page);
+}
+
+.home__empty {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: calc(var(--spacing-card) * 2);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* Home / Landing Page Specific Styles */
+.hero-title {
+  max-width: min(100%, 700px);
+  margin: 0 auto var(--spacing-gap);
+  text-align: center;
+}
+
+.hero-subtitle {
+  max-width: min(100%, 550px);
+  margin: 0 auto calc(var(--spacing-gap) * 1.5);
+  text-align: center;
+}
+
+.hero-cta {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto calc(var(--spacing-gap) * 2);
+}
+
+.hero-grid {
+  width: 100%;
+  max-width: min(100%, 800px);
+  margin: 0 auto;
+}
+
+.card--feature {
+  text-align: left;
+}
+
+.card--feature__icon {
+  margin-bottom: var(--spacing-gap);
+}
+
+.card--feature__title {
+  margin-bottom: 4px;
+}
+
+.footer-nav {
+  justify-content: space-between;
+}

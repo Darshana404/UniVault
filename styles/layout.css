@@ -1,0 +1,160 @@
+/* ==========================================================================
+   styles/layout.css — Page-level layout, fluid grid systems, responsive sizing
+   UniVault Design System
+   ========================================================================== */
+
+:root {
+  --spacing-page: clamp(12px, 4vw, 24px);
+  --spacing-card: clamp(10px, 2.5vw, 16px);
+  --spacing-gap: clamp(8px, 2vw, 14px);
+
+  --font-size-logo: clamp(14px, 2.5vw, 18px);
+  --font-size-heading: clamp(13px, 2vw, 16px);
+  --font-size-body: clamp(11px, 1.6vw, 13px);
+  --font-size-label: clamp(9px, 1.2vw, 11px);
+  --font-size-meta: clamp(9px, 1.1vw, 11px);
+  --font-size-badge: clamp(7px, 1vw, 9px);
+
+  --avatar-size: clamp(28px, 5vw, 36px);
+  --icon-box-size: clamp(28px, 5vw, 36px);
+  --btn-padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px);
+  --card-radius: clamp(8px, 1.5vw, 12px);
+  --btn-radius: clamp(6px, 1.2vw, 10px);
+}
+
+/* Page Layout Shell */
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+  width: 100%;
+}
+
+.layout__main {
+  flex: 1;
+  width: 100%;
+  padding: var(--spacing-page);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-gap) * 1.5);
+}
+
+/* Centered Layouts (for Landing, Auth, Upload, etc.) */
+.layout__main--center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: min(100%, 800px);
+  text-align: center;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-page);
+  background-color: var(--color-bg);
+  width: 100%;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: clamp(280px, 90vw, 420px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap);
+}
+
+/* Navbar Layout */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap);
+  padding: clamp(10px, 2vw, 16px) var(--spacing-page);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--color-bg);
+  border-bottom: var(--border);
+  min-height: 54px;
+  width: 100%;
+}
+
+.navbar__search {
+  flex: 1;
+  min-width: 0; /* prevents overflow */
+}
+
+/* Profile Dropdown Layout */
+.dropdown {
+  width: clamp(180px, 60vw, 240px);
+  position: absolute;
+  top: calc(var(--avatar-size) + 10px);
+  right: var(--spacing-page);
+  z-index: 100;
+}
+
+/* Grid Layouts — Fluid columns, no breakpoints */
+.recents-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(120px, 35vw), 1fr));
+  gap: var(--spacing-gap);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.recents-row::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100px, 40vw), 1fr));
+  gap: var(--spacing-gap);
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: var(--spacing-gap);
+}
+
+/* Fluid Typography */
+.logo {
+  font-size: var(--font-size-logo);
+}
+
+.page-title {
+  font-size: var(--font-size-heading);
+}
+
+.card__name {
+  font-size: var(--font-size-body);
+}
+
+.section-label {
+  font-size: var(--font-size-label);
+}
+
+.meta-label {
+  font-size: var(--font-size-label);
+}
+
+.pdf-meta {
+  font-size: var(--font-size-meta);
+}
+
+.badge {
+  font-size: var(--font-size-badge);
+}
+
+/* Upload Button Layout */
+.btn--upload {
+  width: min(100%, 320px);
+  margin: 0 var(--spacing-page) var(--spacing-page);
+}

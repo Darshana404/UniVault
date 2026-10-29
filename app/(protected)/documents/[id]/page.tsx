@@ -1,13 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import "@/styles/pages/pdf-detail.css";
 import { useDocument, useDeleteDocument } from "@/hooks/useDocuments";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { formatFileSize, formatDate } from "@/lib/utils/format";
 
 export default function DocumentDetailPage({
@@ -20,6 +19,7 @@ export default function DocumentDetailPage({
   const { data: user } = useCurrentUser();
   const { data: document, isLoading, error } = useDocument(id);
   const deleteDocument = useDeleteDocument();
+  const [isFavourite, setIsFavourite] = useState(false);
 
   async function handleDownload() {
     const res = await fetch(`/api/documents/${id}/download`);
@@ -43,7 +43,7 @@ export default function DocumentDetailPage({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="home__empty">
         <Spinner size="lg" />
       </div>
     );
@@ -51,12 +51,9 @@ export default function DocumentDetailPage({
 
   if (error || !document) {
     return (
-      <div className="text-center py-20">
-        <p className="text-red-400 font-medium">Document not found</p>
-        <Link
-          href="/documents"
-          className="text-teal-400 hover:text-teal-300 text-sm mt-2 inline-block"
-        >
+      <div className="home__empty">
+        <p className="card__name text-danger">Document not found</p>
+        <Link href="/documents" className="section-header__link">
           ← Back to library
         </Link>
       </div>
@@ -66,14 +63,12 @@ export default function DocumentDetailPage({
   const isOwner = user?.id === document.uploader_id;
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="pdf-detail">
       {/* Back link */}
-      <Link
-        href="/documents"
-        className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-teal-400 transition-colors"
-      >
+      <Link href="/documents" className="pdf-detail__back">
         <svg
-          className="w-4 h-4"
+          width="16"
+          height="16"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -81,33 +76,30 @@ export default function DocumentDetailPage({
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth="2"
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Back to library
+        <span>Back to library</span>
       </Link>
 
-      {/* Document header */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant="info">{document.subject}</Badge>
-              <Badge variant="success">Approved</Badge>
+      {/* 1. File preview block */}
+      <div className="pdf-detail__preview">
+        <div className="pdf-detail__preview-header">
+          <div className="pdf-detail__preview-info">
+            <div className="pdf-detail__badges">
+              <span className="badge">{document.subject}</span>
+              <span className="badge badge--accent">Approved</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="pdf-detail__title page-title">
               {document.title}
             </h1>
-            {document.description && (
-              <p className="text-slate-400 mt-2">{document.description}</p>
-            )}
           </div>
 
-          {/* PDF icon */}
-          <div className="flex-shrink-0 w-14 h-14 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center">
+          <div className="pdf-detail__icon-box">
             <svg
-              className="w-7 h-7 text-red-400"
+              width="18"
+              height="22"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -119,74 +111,182 @@ export default function DocumentDetailPage({
             </svg>
           </div>
         </div>
+      </div>
 
-        {/* Metadata grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-700">
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">
-              File size
-            </p>
-            <p className="text-sm text-slate-300 mt-1">
+      {/* 2. Meta cards grid (2-column fluid, uploader full width) */}
+      <div className="meta-grid">
+        <div className="meta-card">
+          <span className="meta-card__label meta-label">File size</span>
+          <div className="meta-card__content">
+            <span className="meta-card__icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </span>
+            <span className="meta-card__value">
               {formatFileSize(document.file_size)}
-            </p>
+            </span>
           </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">
-              Uploaded
-            </p>
-            <p className="text-sm text-slate-300 mt-1">
+        </div>
+
+        <div className="meta-card">
+          <span className="meta-card__label meta-label">Uploaded</span>
+          <div className="meta-card__content">
+            <span className="meta-card__icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </span>
+            <span className="meta-card__value">
               {formatDate(document.created_at)}
-            </p>
+            </span>
           </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">
-              Uploaded by
-            </p>
-            <p className="text-sm text-slate-300 mt-1 truncate">
-              {document.uploader_email ?? "Unknown"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">
-              Filename
-            </p>
-            <p className="text-sm text-slate-300 mt-1 truncate">
+        </div>
+
+        <div className="meta-card">
+          <span className="meta-card__label meta-label">Filename</span>
+          <div className="meta-card__content">
+            <span className="meta-card__icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+            </span>
+            <span className="meta-card__value">
               {document.original_filename}
-            </p>
+            </span>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 mt-6">
-          <Button onClick={handleDownload} variant="primary">
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
-            </svg>
-            Download PDF
-          </Button>
-
-          {isOwner && (
-            <Button
-              onClick={handleDelete}
-              variant="danger"
-              loading={deleteDocument.isPending}
-            >
-              Delete
-            </Button>
-          )}
+        {/* Uploader email card spans full width (grid-column 1 / -1) */}
+        <div className="meta-card meta-card--full">
+          <span className="meta-card__label meta-label">Uploaded by</span>
+          <div className="meta-card__content">
+            <span className="meta-card__icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                />
+              </svg>
+            </span>
+            <span className="meta-card__value">
+              {document.uploader_email ?? "Unknown"}
+            </span>
+          </div>
         </div>
+      </div>
+
+      {/* 3. Description block */}
+      {document.description && (
+        <div className="description-block">
+          <span className="description-block__label meta-label">
+            Description
+          </span>
+          <p className="description-block__body">
+            {document.description}
+          </p>
+        </div>
+      )}
+
+      {/* 4. Action row */}
+      <div className="pdf-detail__actions">
+        <button
+          type="button"
+          onClick={handleDownload}
+          className="btn btn--primary"
+        >
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+            />
+          </svg>
+          <span>Download PDF</span>
+        </button>
+
+        {/* Icon button (favourite): 44px square, background --color-surface, border --border, icon --color-text-secondary */}
+        <button
+          type="button"
+          onClick={() => setIsFavourite((v) => !v)}
+          className="btn btn--icon"
+          aria-label="Toggle favourite"
+        >
+          <svg
+            width="18"
+            height="18"
+            fill={isFavourite ? "var(--color-accent)" : "none"}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
+
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="btn btn--danger"
+            disabled={deleteDocument.isPending}
+          >
+            {deleteDocument.isPending ? "Deleting…" : "Delete"}
+          </button>
+        )}
       </div>
     </div>
   );
 }
-

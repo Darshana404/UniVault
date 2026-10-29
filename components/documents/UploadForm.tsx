@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { VALID_SUBJECTS } from "@/lib/pdf/taxonomy";
 import { formatFileSize } from "@/lib/utils/format";
-
 import { MIN_FILE_SIZE, MAX_FILE_SIZE } from "@/lib/pdf/limits";
 
 export function UploadForm() {
@@ -49,7 +48,6 @@ export function UploadForm() {
     setFile(selected);
     setErrors((prev) => ({ ...prev, file: "" }));
 
-    // Auto-fill title from filename if empty
     if (!title) {
       const nameWithoutExt = selected.name.replace(/\.pdf$/i, "");
       setTitle(nameWithoutExt);
@@ -81,14 +79,12 @@ export function UploadForm() {
         `"${result.document.title}" uploaded and approved successfully.`
       );
 
-      // Reset form
       setFile(null);
       setTitle("");
       setDescription("");
       setSubject("");
       if (fileInputRef.current) fileInputRef.current.value = "";
 
-      // Redirect to document detail after short delay
       setTimeout(() => {
         router.push(`/documents/${result.document.id}`);
       }, 1500);
@@ -101,10 +97,10 @@ export function UploadForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="auth-form">
       {/* File drop zone */}
-      <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+      <div className="form-field">
+        <label className="form-field__label">
           PDF File
         </label>
         <div
@@ -115,31 +111,22 @@ export function UploadForm() {
           }}
           onDragLeave={() => setDragOver(false)}
           onClick={() => fileInputRef.current?.click()}
-          className={`
-            relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
-            transition-colors duration-200
-            ${dragOver
-              ? "border-teal-400 bg-teal-500/10"
-              : file
-              ? "border-teal-500/50 bg-teal-500/5"
-              : "border-slate-600 hover:border-slate-500 bg-slate-800/50"
-            }
-            ${errors.file ? "border-red-500" : ""}
-          `}
+          className={`dropzone ${dragOver ? "dropzone--active" : ""}`}
         >
           <input
             ref={fileInputRef}
             type="file"
             accept=".pdf,application/pdf"
-            className="hidden"
+            hidden
             onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
           />
 
           {file ? (
-            <div className="space-y-2">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20">
+            <div className="auth-brand">
+              <div className="dropzone__icon">
                 <svg
-                  className="w-6 h-6 text-teal-400"
+                  width="20"
+                  height="20"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -150,15 +137,16 @@ export function UploadForm() {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-slate-200">{file.name}</p>
-              <p className="text-xs text-slate-400">{formatFileSize(file.size)}</p>
-              <p className="text-xs text-teal-400">Click to change file</p>
+              <p className="card__name">{file.name}</p>
+              <p className="pdf-meta">{formatFileSize(file.size)}</p>
+              <p className="section-label">Click to change file</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-700">
+            <div className="auth-brand">
+              <div className="dropzone__icon">
                 <svg
-                  className="w-6 h-6 text-slate-400"
+                  width="20"
+                  height="20"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -171,13 +159,10 @@ export function UploadForm() {
                   />
                 </svg>
               </div>
-              <p className="text-sm text-slate-300">
-                <span className="text-teal-400 font-medium">
-                  Click to upload
-                </span>{" "}
-                or drag and drop
+              <p className="dropzone__text">
+                <span className="section-label">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="dropzone__subtext">
                 PDF only · {formatFileSize(MIN_FILE_SIZE)} – {formatFileSize(MAX_FILE_SIZE)}
               </p>
             </div>
@@ -185,7 +170,7 @@ export function UploadForm() {
         </div>
 
         {errors.file && (
-          <p className="mt-1.5 text-sm text-red-400" role="alert">
+          <p className="form-field__error" role="alert">
             {errors.file}
           </p>
         )}
@@ -206,8 +191,8 @@ export function UploadForm() {
       />
 
       {/* Subject */}
-      <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+      <div className="form-field">
+        <label className="form-field__label">
           Subject
         </label>
         <select
@@ -217,13 +202,7 @@ export function UploadForm() {
             setErrors((prev) => ({ ...prev, subject: "" }));
           }}
           disabled={upload.isPending}
-          className={`
-            w-full px-4 py-2.5 rounded-lg text-slate-100 bg-slate-800
-            border transition-colors focus:outline-none focus:ring-2
-            focus:ring-teal-500 focus:border-transparent
-            disabled:opacity-50
-            ${errors.subject ? "border-red-500" : "border-slate-700"}
-          `}
+          className={`select ${errors.subject ? "form-field__input--error" : ""}`}
         >
           <option value="">Select a subject…</option>
           {VALID_SUBJECTS.map((s) => (
@@ -233,17 +212,16 @@ export function UploadForm() {
           ))}
         </select>
         {errors.subject && (
-          <p className="mt-1.5 text-sm text-red-400" role="alert">
+          <p className="form-field__error" role="alert">
             {errors.subject}
           </p>
         )}
       </div>
 
       {/* Description */}
-      <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">
-          Description{" "}
-          <span className="text-slate-500 font-normal">(optional)</span>
+      <div className="form-field">
+        <label className="form-field__label">
+          Description (optional)
         </label>
         <textarea
           value={description}
@@ -252,38 +230,28 @@ export function UploadForm() {
           rows={3}
           disabled={upload.isPending}
           maxLength={1000}
-          className="w-full px-4 py-2.5 rounded-lg text-slate-100 placeholder-slate-500 bg-slate-800 border border-slate-700 hover:border-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:opacity-50 resize-none"
+          className="form-field__input form-field__textarea"
         />
-        <p className="mt-1 text-xs text-slate-500 text-right">
+        <p className="form-field__hint">
           {description.length}/1000
         </p>
       </div>
 
       {/* Validation rules reminder */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 space-y-1">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+      <div className="card">
+        <p className="form-field__label">
           Validation requirements
         </p>
-        <ul className="space-y-1 mt-2">
+        <ul className="home__section">
           {[
             "Valid PDF format (not image-only)",
             "File size: 100 KB – 50 MB",
             "At least 200 readable characters",
             "Content must match the selected subject",
           ].map((rule) => (
-            <li key={rule} className="flex items-center gap-2 text-xs text-slate-400">
-              <svg
-                className="w-3 h-3 text-teal-500 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {rule}
+            <li key={rule} className="pdf-meta flex-row-item">
+              <span className="logo__accent">✓</span>
+              <span>{rule}</span>
             </li>
           ))}
         </ul>
@@ -291,8 +259,8 @@ export function UploadForm() {
 
       {/* Submit error */}
       {errors.submit && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-          <p className="text-sm text-red-400" role="alert">
+        <div className="card">
+          <p className="text-danger" role="alert">
             {errors.submit}
           </p>
         </div>
@@ -300,8 +268,8 @@ export function UploadForm() {
 
       {/* Success message */}
       {successMessage && (
-        <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4">
-          <p className="text-sm text-teal-400">{successMessage}</p>
+        <div className="card">
+          <p className="logo__accent">{successMessage}</p>
         </div>
       )}
 
@@ -309,11 +277,10 @@ export function UploadForm() {
         type="submit"
         size="lg"
         loading={upload.isPending}
-        className="w-full"
+        className="btn--full"
       >
         {upload.isPending ? "Uploading and validating…" : "Upload Document"}
       </Button>
     </form>
   );
 }
-

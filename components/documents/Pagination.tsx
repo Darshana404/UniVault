@@ -17,12 +17,12 @@ export function Pagination({ pagination, onPageChange }: PaginationProps) {
   const end = Math.min(page * limit, total);
 
   return (
-    <div className="flex items-center justify-between mt-6">
-      <p className="text-sm text-slate-500">
+    <div className="pagination">
+      <p className="pagination__info">
         Showing {start}–{end} of {total} documents
       </p>
 
-      <div className="flex items-center gap-2">
+      <div className="pagination__controls">
         <Button
           variant="secondary"
           size="sm"
@@ -32,7 +32,7 @@ export function Pagination({ pagination, onPageChange }: PaginationProps) {
           Previous
         </Button>
 
-        <span className="text-sm text-slate-400 px-2">
+        <span className="pagination__info">
           {page} / {totalPages}
         </span>
 
@@ -48,4 +48,3 @@ export function Pagination({ pagination, onPageChange }: PaginationProps) {
     </div>
   );
 }
-

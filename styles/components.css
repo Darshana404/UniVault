@@ -1,0 +1,845 @@
+/* ==========================================================================
+   styles/components.css — Reusable components
+   UniVault Design System
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Navbar & Logo
+   -------------------------------------------------------------------------- */
+.navbar__logo {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-logo);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing-gap) * 0.5);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.navbar__logo-accent,
+.logo__accent {
+  color: var(--color-accent);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap);
+}
+
+/* --------------------------------------------------------------------------
+   Search Bar
+   -------------------------------------------------------------------------- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-btn);
+}
+
+.search-bar__icon {
+  position: absolute;
+  left: clamp(8px, 1.5vw, 12px);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-bar__input {
+  width: 100%;
+  padding: clamp(6px, 1.5vw, 10px) clamp(28px, 4vw, 36px) clamp(6px, 1.5vw, 10px) clamp(30px, 4.5vw, 38px);
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: none;
+}
+
+.search-bar__input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.search-bar__clear {
+  position: absolute;
+  right: clamp(8px, 1.5vw, 12px);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Avatar
+   -------------------------------------------------------------------------- */
+.avatar {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  min-width: var(--avatar-size);
+  min-height: var(--avatar-size);
+  border-radius: var(--radius-avatar);
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-weight: 700;
+  font-size: var(--font-size-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.avatar--lg {
+  width: clamp(34px, 5vw, 38px);
+  height: clamp(34px, 5vw, 38px);
+  min-width: clamp(34px, 5vw, 38px);
+  min-height: clamp(34px, 5vw, 38px);
+}
+
+/* --------------------------------------------------------------------------
+   Section Headers
+   -------------------------------------------------------------------------- */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: var(--spacing-gap);
+}
+
+.section-header__label,
+.section-label {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-label);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.section-header__link {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: clamp(10px, 1.5vw, 12px);
+  color: var(--color-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Cards (Base, PDF Cards, Category Cards)
+   -------------------------------------------------------------------------- */
+.card {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+  transition: border-color 0.15s ease;
+  position: relative;
+  width: 100%;
+}
+
+.card:hover {
+  border: var(--border-hover);
+}
+
+/* PDF Card */
+.card--pdf {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+  transition: border-color 0.15s ease;
+  text-decoration: none;
+}
+
+.card--pdf:hover {
+  border: var(--border-hover);
+}
+
+.card--pdf__icon {
+  width: 36px;
+  height: 44px;
+  background-color: var(--color-bg);
+  border: var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-gap);
+  color: var(--color-accent);
+}
+
+.card--pdf__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.card--pdf__title {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card--pdf__meta {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-meta);
+  color: var(--color-text-secondary);
+}
+
+.card--pdf__badge {
+  position: absolute;
+  right: clamp(8px, 1.5vw, 12px);
+  bottom: clamp(8px, 1.5vw, 12px);
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-size: var(--font-size-badge);
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: var(--radius-badge);
+  padding: 2px 5px;
+  line-height: 1;
+}
+
+.card--pdf__actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing-gap) * 0.5);
+  margin-top: calc(var(--spacing-gap) * 0.5);
+}
+
+/* Category Card */
+.card--category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: calc(var(--spacing-gap) * 0.75);
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+  transition: border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.card--category:hover {
+  border: var(--border-hover);
+}
+
+.card--category__icon {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.card--category__label {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-label);
+  color: var(--color-text-secondary);
+  word-break: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   Badges
+   -------------------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-badge);
+  border-radius: var(--radius-badge);
+  padding: 2px 6px;
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  border: var(--border);
+  line-height: 1.2;
+  width: fit-content;
+}
+
+.badge--accent {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 700;
+  border: none;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing-gap) * 0.6);
+  padding: var(--btn-padding);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: border-color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 700;
+  border: none;
+}
+
+.btn--secondary {
+  background-color: var(--color-surface);
+  border: var(--border);
+  color: var(--color-text-muted);
+}
+
+.btn--secondary:hover {
+  border: var(--border-hover);
+}
+
+.btn--danger {
+  background-color: var(--color-surface);
+  border: 0.5px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.btn--icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-btn);
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.btn--icon:hover {
+  border: var(--border-hover);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+.btn--sm {
+  padding: 4px 8px;
+  font-size: var(--font-size-label);
+}
+
+.btn--lg {
+  padding: clamp(10px, 2.5vw, 14px) clamp(16px, 3.5vw, 24px);
+}
+
+/* --------------------------------------------------------------------------
+   Profile Dropdown Menu
+   -------------------------------------------------------------------------- */
+.dropdown__menu {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap);
+  padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 16px);
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+.dropdown__user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dropdown__user-name {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown__user-email {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: clamp(9px, 1.4vw, 11px);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown__divider {
+  height: 0.5px;
+  background-color: var(--color-border);
+  border: none;
+  margin: 0;
+}
+
+.dropdown__item {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: clamp(11px, 1.8vw, 13px);
+  color: var(--color-text-muted);
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.dropdown__item-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdown__item:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.dropdown__item--danger {
+  color: var(--color-danger);
+}
+
+.dropdown__item--danger .dropdown__item-icon {
+  color: var(--color-danger);
+}
+
+.dropdown__item--danger:hover {
+  color: var(--color-danger);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Inputs, Forms & Fields
+   -------------------------------------------------------------------------- */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.form-field__label {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+}
+
+.form-field__input {
+  width: 100%;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-btn);
+  padding: clamp(8px, 1.8vw, 10px) clamp(10px, 2vw, 14px);
+  color: var(--color-text-primary);
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-body);
+  transition: border-color 0.15s ease;
+}
+
+.form-field__input:hover,
+.form-field__input:focus {
+  border: var(--border-hover);
+}
+
+.form-field__input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.form-field__input--error {
+  border-color: var(--color-danger);
+}
+
+.form-field__error {
+  font-size: var(--font-size-meta);
+  color: var(--color-danger);
+}
+
+.form-field__hint {
+  font-size: var(--font-size-meta);
+  color: var(--color-text-secondary);
+}
+
+.form-field__textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* --------------------------------------------------------------------------
+   Select Dropdowns
+   -------------------------------------------------------------------------- */
+.select {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-btn);
+  color: var(--color-text-primary);
+  padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: var(--font-size-body);
+  transition: border-color 0.15s ease;
+}
+
+.select:hover {
+  border: var(--border-hover);
+}
+
+/* --------------------------------------------------------------------------
+   PDF Detail — Meta Cards
+   -------------------------------------------------------------------------- */
+.meta-card {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-card--full {
+  grid-column: 1 / -1;
+}
+
+.meta-card__label,
+.meta-label {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.meta-card__content {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing-gap) * 0.6);
+}
+
+.meta-card__icon {
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meta-card__value {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Description Block
+   -------------------------------------------------------------------------- */
+.description-block {
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-gap) * 0.75);
+}
+
+.description-block__label {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.description-block__body {
+  font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+}
+
+/* --------------------------------------------------------------------------
+   Auth / Login / Verify Specific Components
+   -------------------------------------------------------------------------- */
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: calc(var(--spacing-gap) * 0.5);
+}
+
+.auth-brand__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-brand__icon {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap);
+  width: 100%;
+}
+
+.auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-meta);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.auth-back:hover {
+  color: var(--color-accent);
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: var(--font-size-meta);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.otp-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing-gap) * 0.6);
+  width: 100%;
+}
+
+.otp-input {
+  width: clamp(34px, 8vw, 44px);
+  height: clamp(42px, 10vw, 52px);
+  text-align: center;
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+  background-color: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-btn);
+  color: var(--color-text-primary);
+  transition: border-color 0.15s ease;
+}
+
+.otp-input:focus {
+  border: var(--border-hover);
+}
+
+.otp-input:disabled {
+  opacity: 0.5;
+}
+
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-meta);
+  margin-top: 4px;
+}
+
+.status-message--error {
+  color: var(--color-danger);
+}
+
+.status-message--info {
+  color: var(--color-accent);
+}
+
+.status-message--success {
+  color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   File Dropzone
+   -------------------------------------------------------------------------- */
+.dropzone {
+  border: 1px dashed var(--color-border);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+  padding: calc(var(--spacing-card) * 2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  gap: var(--spacing-gap);
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+
+.dropzone:hover,
+.dropzone--active {
+  border-color: var(--color-accent);
+}
+
+.dropzone__icon {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.dropzone__text {
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+}
+
+.dropzone__subtext {
+  font-size: var(--font-size-meta);
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Pagination
+   -------------------------------------------------------------------------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: var(--spacing-gap);
+  flex-wrap: wrap;
+  gap: var(--spacing-gap);
+}
+
+.pagination__info {
+  font-size: var(--font-size-meta);
+  color: var(--color-text-secondary);
+}
+
+.pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap);
+}
+
+.flex-row-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Toggle Switch
+   -------------------------------------------------------------------------- */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  border: var(--border);
+  cursor: pointer;
+  padding: 2px;
+  transition: border-color 0.15s ease;
+}
+
+.toggle-switch--active {
+  background-color: var(--color-accent);
+}
+
+.toggle-switch__thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+  transition: transform 0.15s ease;
+  transform: translateX(0);
+}
+
+.toggle-switch--active .toggle-switch__thumb {
+  transform: translateX(20px);
+}

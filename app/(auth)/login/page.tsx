@@ -39,50 +39,34 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen relative flex flex-col items-center justify-center bg-slate-950 px-4 py-8 overflow-hidden">
-      {/* Subtle background ambient light */}
-      <div
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-teal-500/10 blur-[100px] rounded-full"
-        aria-hidden="true"
-      />
-
-      <div className="w-full max-w-sm relative z-10">
+    <main className="auth-page">
+      <div className="auth-container">
         {/* Back Link */}
-        <div className="mb-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-teal-400 transition-colors"
+        <Link href="/" className="auth-back">
+          <svg
+            width="12"
+            height="12"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2.5"
+            stroke="currentColor"
           >
-            <svg
-              width={12}
-              height={12}
-              style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            <span>Back to home</span>
-          </Link>
-        </div>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          <span>Back to home</span>
+        </Link>
 
         {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center gap-2 mb-2">
-            <div
-              className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400"
-              style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px" }}
-            >
+        <div className="auth-brand">
+          <div className="auth-brand__badge">
+            <div className="auth-brand__icon">
               <svg
-                width={14}
-                height={14}
-                style={{ width: "14px", height: "14px", maxWidth: "14px", maxHeight: "14px", flexShrink: 0 }}
+                width="14"
+                height="14"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                strokeWidth={2}
+                strokeWidth="2"
               >
                 <path
                   strokeLinecap="round"
@@ -91,19 +75,19 @@ export default function LoginPage() {
                 />
               </svg>
             </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              Uni<span className="text-teal-400">Vault</span>
+            <span className="logo">
+              Uni<span className="logo__accent">Vault</span>
             </span>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white">Sign in</h1>
-          <p className="text-slate-400 mt-1 text-xs">
+          <h1 className="page-title">Sign in</h1>
+          <p className="pdf-meta">
             Enter your university email to receive a login code
           </p>
         </div>
 
         {/* Card Form */}
-        <Card className="p-6 sm:p-7">
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <Card>
+          <form onSubmit={handleSubmit} noValidate className="auth-form">
             <Input
               label="University Email"
               type="email"
@@ -120,7 +104,7 @@ export default function LoginPage() {
               type="submit"
               size="md"
               loading={requestOTP.isPending}
-              className="w-full mt-1"
+              className="btn--full"
             >
               {requestOTP.isPending ? "Sending code…" : "Send verification code"}
             </Button>
@@ -128,16 +112,14 @@ export default function LoginPage() {
         </Card>
 
         {/* Security / Verification footer */}
-        <div className="mt-5 flex items-center justify-center gap-1.5 text-slate-500 text-[11px] text-center">
+        <div className="auth-footer">
           <svg
-            width={12}
-            height={12}
-            style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
+            width="12"
+            height="12"
             fill="none"
             viewBox="0 0 24 24"
-            strokeWidth={2}
+            strokeWidth="2"
             stroke="currentColor"
-            className="text-teal-500/70"
           >
             <path
               strokeLinecap="round"

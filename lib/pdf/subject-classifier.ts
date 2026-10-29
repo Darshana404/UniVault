@@ -11,96 +11,135 @@ export interface ClassificationResult {
   reason?: string;
 }
 
-// Count how many taxonomy keywords appear in the text
-function countKeywordMatches(
-  text: string,
-  keywords: string[]
-): number {
-  const lowerText = text.toLowerCase();
-  return keywords.filter((keyword) =>
-    lowerText.includes(keyword.toLowerCase())
-  ).length;
+// Programmes whose content legitimately overlaps. A document declared as one
+// of these passes if it matches any listed neighbour. Edit this map to tune.
+const RELATED_PROGRAMMES: Record<string, string[]> = {
+  "B.Tech CSE (Core)": [
+    "B.Tech CSE (Cyber Security)",
+    "B.Tech AI & DS",
+    "B.Tech CSE (IoT)",
+    "B.Tech IT",
+  ],
+  "B.Tech CSE (Cyber Security)": [
+    "B.Tech CSE (Core)",
+    "B.Tech AI & DS",
+    "B.Tech CSE (IoT)",
+    "B.Tech IT",
+  ],
+  "B.Tech AI & DS": [
+    "B.Tech CSE (Core)",
+    "B.Tech CSE (Cyber Security)",
+    "B.Tech IT",
+    "B.Sc Economics",
+  ],
+  "B.Tech CSE (IoT)": ["B.Tech CSE (Core)", "B.Tech ECE", "B.Tech EEE"],
+  "B.Tech IT": [
+    "B.Tech CSE (Core)",
+    "B.Tech CSE (Cyber Security)",
+    "B.Tech AI & DS",
+  ],
+  "B.Tech ECE": ["B.Tech CSE (IoT)", "B.Tech EEE"],
+  "B.Tech EEE": ["B.Tech ECE", "B.Tech CSE (IoT)"],
+  "B.Tech Mechanical": ["B.Tech Chemical", "B.Tech Civil"],
+  "B.Tech Civil": ["B.Tech Mechanical"],
+  "B.Tech Chemical": ["B.Tech Mechanical", "B.Tech Biomedical Engineering"],
+  "B.Tech Biomedical Engineering": ["B.Tech Chemical", "B.Tech ECE"],
+  "B.Com Professional Accounting": ["B.Com General"],
+  "B.Com General": ["B.Com Professional Accounting", "B.Sc Economics"],
+  "B.Sc Economics": ["B.Com General", "B.Tech AI & DS"],
+};
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Check whether extracted text matches the declared subject
+// Counts distinct keywords found as whole words (simple plurals allowed)
+function countMatches(text: string, keywords: string[]): number {
+  return keywords.filter((keyword) => {
+    const pattern = new RegExp(
+      `(^|[^a-z0-9])${escapeRegex(keyword.toLowerCase())}(?:e?s)?(?![a-z0-9])`,
+      "i"
+    );
+    return pattern.test(text);
+  }).length;
+}
+
 export function classifySubject(
   extractedText: string,
   declaredSubject: string,
   title: string
 ): ClassificationResult {
-  const combined = `${title} ${extractedText}`.toLowerCase();
+  const text = `${title}\n${extractedText}`.toLowerCase();
 
-  // Get the declared subject definition
-  const subjectDef = getSubjectDefinition(declaredSubject);
+  const declared: SubjectDefinition | undefined =
+    getSubjectDefinition(declaredSubject);
 
-  if (!subjectDef) {
-    // Unknown subject — use General taxonomy as fallback
-    const generalDef = SUBJECT_TAXONOMY.find((s) => s.name === "General");
-    if (!generalDef) {
-      return {
-        passed: false,
-        matchCount: 0,
-        reason: `Unknown subject: "${declaredSubject}". Please select a valid subject.`,
-      };
-    }
-
-    const matchCount = countKeywordMatches(combined, generalDef.keywords);
-    if (matchCount >= generalDef.minMatches) {
-      return { passed: true, matchedSubject: "General", matchCount };
-    }
-
+  if (!declared) {
     return {
       passed: false,
-      matchCount,
-      reason: `Unknown subject "${declaredSubject}" and document does not appear to be academic content.`,
+      matchCount: 0,
+      reason: `"${declaredSubject}" is not a recognised programme. Please select one from the list.`,
     };
   }
 
-  // Count matches for the declared subject
-  const matchCount = countKeywordMatches(combined, subjectDef.keywords);
+  // Hit count for every programme, computed once
+  const scores = SUBJECT_TAXONOMY.map((course) => ({
+    course,
+    hits: countMatches(text, course.keywords),
+  }));
 
-  if (matchCount >= subjectDef.minMatches) {
+  const hitsFor = (name: string) =>
+    scores.find((s) => s.course.name === name)?.hits ?? 0;
+
+  const declaredHits = hitsFor(declared.name);
+
+  // 1. Matches its own programme
+  if (declaredHits >= declared.minMatches) {
     return {
       passed: true,
-      matchedSubject: subjectDef.name,
-      matchCount,
+      matchedSubject: declared.name,
+      matchCount: declaredHits,
     };
   }
 
-  // If declared subject fails, check if it matches any other subject
-  // This catches mislabelled documents
-  const bestMatch = findBestSubjectMatch(combined);
+  // 2. Matches a related programme (e.g. AI notes in a cyber programme)
+  const neighbours = (RELATED_PROGRAMMES[declared.name] ?? [])
+    .map((name) => scores.find((s) => s.course.name === name))
+    .filter(
+      (s): s is (typeof scores)[number] =>
+        s !== undefined && s.hits >= s.course.minMatches
+    )
+    .sort((a, b) => b.hits - a.hits);
 
-  if (bestMatch) {
+  if (neighbours.length > 0) {
+    return {
+      passed: true,
+      matchedSubject: declared.name,
+      matchCount: neighbours[0]!.hits,
+    };
+  }
+
+  // 3. Clearly belongs to an unrelated programme: reject and say which one
+  const unrelatedBest = scores
+    .filter(
+      (s) =>
+        s.course.name !== declared.name &&
+        !(RELATED_PROGRAMMES[declared.name] ?? []).includes(s.course.name) &&
+        s.hits >= s.course.minMatches
+    )
+    .sort((a, b) => b.hits - a.hits)[0];
+
+  if (unrelatedBest && unrelatedBest.hits >= declaredHits * 2) {
     return {
       passed: false,
-      matchCount,
-      reason: `Document content appears to be "${bestMatch.name}" but was declared as "${declaredSubject}". Please select the correct subject.`,
+      matchCount: declaredHits,
+      reason: `This looks like a "${unrelatedBest.course.name}" document, but it was declared as "${declared.name}". Please select the correct programme.`,
     };
   }
 
   return {
     passed: false,
-    matchCount,
-    reason: `Document does not appear to be related to "${declaredSubject}". Only ${matchCount} relevant keyword(s) found (minimum: ${subjectDef.minMatches}).`,
+    matchCount: declaredHits,
+    reason: `This document does not appear to belong to "${declared.name}" (${declaredHits} relevant keyword(s) found, minimum ${declared.minMatches}).`,
   };
 }
-
-// Find the best matching subject for a given text
-function findBestSubjectMatch(
-  text: string
-): SubjectDefinition | undefined {
-  let bestMatch: SubjectDefinition | undefined;
-  let bestCount = 0;
-
-  for (const subject of SUBJECT_TAXONOMY) {
-    const count = countKeywordMatches(text, subject.keywords);
-    if (count >= subject.minMatches && count > bestCount) {
-      bestCount = count;
-      bestMatch = subject;
-    }
-  }
-
-  return bestMatch;
-}
-

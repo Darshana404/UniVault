@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useVerifyOTP, useRequestOTP } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
@@ -13,13 +13,19 @@ const GENERIC_ERROR = "Invalid or expired code. Please request a new one.";
 
 const emptyOtp = (): string[] => Array<string>(OTP_LENGTH).fill("");
 
+// Reads the pending email from sessionStorage without setState in an effect.
+// The server snapshot is "" so server and client render the same first frame.
+const noopSubscribe = () => () => {};
+const readPendingEmail = () => sessionStorage.getItem(EMAIL_KEY) ?? "";
+const serverEmail = () => "";
+
 export default function VerifyPage() {
   const router = useRouter();
   const { mutateAsync: verifyAsync, isPending: verifying } = useVerifyOTP();
   const { mutateAsync: requestAsync, isPending: resending } = useRequestOTP();
 
   const [otp, setOtp] = useState<string[]>(emptyOtp);
-  const [email, setEmail] = useState("");
+  const email = useSyncExternalStore(noopSubscribe, readPendingEmail, serverEmail);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [locked, setLocked] = useState(false);
@@ -34,12 +40,10 @@ export default function VerifyPage() {
 
   // Entry guard: redirect to /login if there's no pending email
   useEffect(() => {
-    const pending = sessionStorage.getItem(EMAIL_KEY);
-    if (!pending) {
+    if (!sessionStorage.getItem(EMAIL_KEY)) {
       router.replace("/login");
       return;
     }
-    setEmail(pending);
     setTimeout(() => focusInput(0), 100);
   }, [router]);
 

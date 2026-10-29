@@ -4,6 +4,8 @@
 // 3. Unique word density
 // 4. Average word length
 
+import { MIN_ALPHA_RATIO } from "./limits";
+
 export interface GarbageDetectionResult {
   passed: boolean;
   score: number; // 0 = garbage, 1 = clean
@@ -94,12 +96,12 @@ export function detectGarbage(
   }
 
   // Alpha ratio check:
-  // Legitimate academic text is at least 60% alphabetic characters
-  if (alphaRatio < 0.6) {
+  // Legitimate academic text is at least 50% alphabetic characters
+  if (alphaRatio < MIN_ALPHA_RATIO) {
     return {
       passed: false,
       score: alphaRatio,
-      reason: `Document has too few readable characters (${Math.round(alphaRatio * 100)}% alphabetic). Expected at least 60%.`,
+      reason: `Document has too few readable characters (${Math.round(alphaRatio * 100)}% alphabetic). Expected at least ${Math.round(MIN_ALPHA_RATIO * 100)}%.`,
     };
   }
 

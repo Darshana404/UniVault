@@ -9,9 +9,7 @@ export interface FormatValidationResult {
 // PDF magic bytes: all valid PDFs start with %PDF-
 const PDF_MAGIC_BYTES = Buffer.from("%PDF-");
 
-// File size limits
-export const MIN_FILE_SIZE = 100 * 1024;        // 100 KB
-export const MAX_FILE_SIZE = 50 * 1024 * 1024;  // 50 MB
+import { MIN_FILE_SIZE, MAX_FILE_SIZE } from "./limits";
 
 export function validatePDFFormat(
   buffer: Buffer,

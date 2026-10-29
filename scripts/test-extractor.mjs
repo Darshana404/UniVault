@@ -1,5 +1,4 @@
 import { createRequire } from "module";
-import path from "path";
 
 // Quick smoke-test of the PDF extractor logic in Node.js
 // Run with: node --experimental-vm-modules scripts/test-extractor.mjs

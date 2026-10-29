@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
   useDocuments,
+  useSemanticSearch,
   useSubjects,
   useDeleteDocument,
 } from "@/hooks/useDocuments";
@@ -16,6 +17,7 @@ export default function DocumentsPage() {
   const { data: user } = useCurrentUser();
   const deleteDocument = useDeleteDocument();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [useSemanticMode, setUseSemanticMode] = useState(false);
 
   const [params, setParams] = useState<DocumentSearchParams>({
     q: "",
@@ -26,19 +28,25 @@ export default function DocumentsPage() {
     limit: 20,
   });
 
-  const { data, isLoading, error } = useDocuments(params);
+  const queryText = params.q?.trim() ?? "";
+  const isSemanticActive = useSemanticMode && queryText.length >= 3;
+
+  // Use semantic or keyword search exclusively so we don't double fetch
+  const keywordResult = useDocuments(params, !isSemanticActive);
+  const semanticResult = useSemanticSearch(params, isSemanticActive);
+
+  const activeResult = isSemanticActive ? semanticResult : keywordResult;
+
+  const { data, isLoading, error } = activeResult;
   const { data: subjects } = useSubjects();
 
   const handleSearch = useCallback((q: string) => {
     setParams((prev) => ({ ...prev, q, page: 1 }));
   }, []);
 
-  const handleSubject = useCallback(
-    (subject: string) => {
-      setParams((prev) => ({ ...prev, subject, page: 1 }));
-    },
-    []
-  );
+  const handleSubject = useCallback((subject: string) => {
+    setParams((prev) => ({ ...prev, subject, page: 1 }));
+  }, []);
 
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -62,13 +70,19 @@ export default function DocumentsPage() {
     try {
       await deleteDocument.mutateAsync(id);
     } catch (err) {
-      alert(
-        err instanceof Error ? err.message : "Failed to delete document."
-      );
+      alert(err instanceof Error ? err.message : "Failed to delete.");
     } finally {
       setDeletingId(null);
     }
   }
+
+  const searchType = data && "searchType" in data
+    ? data.searchType
+    : "keyword";
+
+  const fallbackReason = data && "fallbackReason" in data
+    ? (data.fallbackReason as string | undefined)
+    : undefined;
 
   return (
     <div className="space-y-6">
@@ -86,11 +100,10 @@ export default function DocumentsPage() {
           <DocumentSearch
             value={params.q ?? ""}
             onChange={handleSearch}
-            placeholder="Search by title or description…"
+            placeholder="Search documents…"
           />
         </div>
 
-        {/* Subject filter */}
         <select
           value={params.subject ?? ""}
           onChange={(e) => handleSubject(e.target.value)}
@@ -104,31 +117,83 @@ export default function DocumentsPage() {
           ))}
         </select>
 
-        {/* Sort */}
-        <select
-          value={`${params.sort ?? "created_at"}-${params.order ?? "desc"}`}
-          onChange={handleSort}
-          className="px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
-        >
-          <option value="created_at-desc">Newest first</option>
-          <option value="created_at-asc">Oldest first</option>
-          <option value="title-asc">Title A–Z</option>
-          <option value="title-desc">Title Z–A</option>
-        </select>
+        {/* Only show sort when not in semantic mode */}
+        {!useSemanticMode && (
+          <select
+            value={`${params.sort ?? "created_at"}-${params.order ?? "desc"}`}
+            onChange={handleSort}
+            className="px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+          >
+            <option value="created_at-desc">Newest first</option>
+            <option value="created_at-asc">Oldest first</option>
+            <option value="title-asc">Title A–Z</option>
+            <option value="title-desc">Title Z–A</option>
+          </select>
+        )}
       </div>
 
-      {/* Results count */}
-      {!isLoading && data && (
-        <p className="text-sm text-slate-500">
-          {data.pagination.total === 0
-            ? "No documents found"
-            : `${data.pagination.total} document${data.pagination.total === 1 ? "" : "s"} found`}
-          {params.q && (
-            <span>
-              {" "}for <span className="text-slate-300">&quot;{params.q}&quot;</span>
-            </span>
-          )}
-        </p>
+      {/* Semantic search toggle */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Toggle button */}
+          <button
+            onClick={() => setUseSemanticMode((v) => !v)}
+            className={`
+              relative inline-flex h-6 w-11 items-center rounded-full
+              transition-colors focus:outline-none focus:ring-2
+              focus:ring-teal-500 focus:ring-offset-2
+              focus:ring-offset-slate-900
+              ${useSemanticMode ? "bg-teal-500" : "bg-slate-700"}
+            `}
+            role="switch"
+            aria-checked={useSemanticMode}
+            aria-label="Toggle semantic search"
+          >
+            <span
+              className={`
+                inline-block h-4 w-4 transform rounded-full bg-white
+                transition-transform
+                ${useSemanticMode ? "translate-x-6" : "translate-x-1"}
+              `}
+            />
+          </button>
+          <span className="text-sm text-slate-400">
+            Semantic search
+            {useSemanticMode && queryText && (
+              <span className="ml-2 text-xs text-teal-400">
+                {queryText.length < 3
+                  ? "— type 3+ characters"
+                  : searchType === "semantic"
+                  ? "— AI content-matched"
+                  : "— using keyword fallback"}
+              </span>
+            )}
+          </span>
+        </div>
+
+        {/* Results count */}
+        {!isLoading && data && (
+          <p className="text-sm text-slate-500">
+            {data.pagination.total === 0
+              ? "No documents found"
+              : `${data.pagination.total} result${
+                  data.pagination.total === 1 ? "" : "s"
+                }`}
+            {params.q && (
+              <span>
+                {" "}for{" "}
+                <span className="text-slate-300">&quot;{params.q}&quot;</span>
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+
+      {/* Fallback notice */}
+      {fallbackReason && (
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3">
+          <p className="text-sm text-yellow-400">{fallbackReason}</p>
+        </div>
       )}
 
       {/* Document list */}
@@ -151,4 +216,3 @@ export default function DocumentsPage() {
     </div>
   );
 }
-

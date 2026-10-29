@@ -15,6 +15,7 @@ export interface ValidationResult {
   status: "APPROVED" | "REJECTED";
   failureReason?: string;
   extractedTextLength: number;
+  extractedText?: string;
   pageCount: number;
   contentHash: string;
   garbageScore?: number;
@@ -68,6 +69,7 @@ export async function validatePDF(
       status: "REJECTED",
       failureReason: `PDF contains insufficient readable text (${extractionResult.text.length} characters). Minimum is ${MIN_READABLE_CHARS} characters. The PDF may be image-based or scanned without OCR.`,
       extractedTextLength: extractionResult.text.length,
+    extractedText: extractionResult.text,
       pageCount: extractionResult.pageCount,
       contentHash,
     };
@@ -81,6 +83,7 @@ export async function validatePDF(
       failureReason:
         garbageResult.reason ?? "Document content quality check failed.",
       extractedTextLength: extractionResult.text.length,
+    extractedText: extractionResult.text,
       pageCount: extractionResult.pageCount,
       contentHash,
       garbageScore: garbageResult.score,
@@ -101,6 +104,7 @@ export async function validatePDF(
         classificationResult.reason ??
         "Document subject classification failed.",
       extractedTextLength: extractionResult.text.length,
+    extractedText: extractionResult.text,
       pageCount: extractionResult.pageCount,
       contentHash,
       garbageScore: garbageResult.score,
@@ -112,6 +116,7 @@ export async function validatePDF(
   return {
     status: "APPROVED",
     extractedTextLength: extractionResult.text.length,
+    extractedText: extractionResult.text,
     pageCount: extractionResult.pageCount,
     contentHash,
     garbageScore: garbageResult.score,

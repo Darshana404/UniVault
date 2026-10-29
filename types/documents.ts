@@ -37,6 +37,8 @@ export interface DocumentEmbedding {
 export interface DocumentListItem
   extends Omit<Document, "storage_path" | "content_hash"> {
   uploader_email?: string;
+  similarity?: number;
+  matched_snippet?: string;
 }
 
 export interface PaginationMeta {

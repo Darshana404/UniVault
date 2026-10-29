@@ -13,8 +13,6 @@ const GENERIC_ERROR = "Invalid or expired code. Please request a new one.";
 
 const emptyOtp = (): string[] => Array<string>(OTP_LENGTH).fill("");
 
-// Reads the pending email from sessionStorage without setState in an effect.
-// The server snapshot is "" so server and client render the same first frame.
 const noopSubscribe = () => () => {};
 const readPendingEmail = () => sessionStorage.getItem(EMAIL_KEY) ?? "";
 const serverEmail = () => "";
@@ -39,32 +37,20 @@ export default function VerifyPage() {
   const focusInput = (i: number) => inputRefs.current[i]?.focus();
 
   // Entry guard: redirect to /login if there's no pending email
-  // useEffect(() => {
-  //   const pending = sessionStorage.getItem(EMAIL_KEY);
-  //   if (!pending) {
-  //     router.replace("/login");
-  //     return;
-  //   }
-  //   setEmail(pending);
-  //   setTimeout(() => focusInput(0), 100);
-  // }, [router]);
+  useEffect(() => {
+    const pending = sessionStorage.getItem(EMAIL_KEY);
 
-// Entry guard: redirect to /login if there's no pending email
-useEffect(() => {
-  const pending = sessionStorage.getItem(EMAIL_KEY);
+    if (!pending) {
+      router.replace("/login");
+      return;
+    }
 
-  if (!pending) {
-    router.replace("/login");
-    return;
-  }
+    const timer = setTimeout(() => {
+      focusInput(0);
+    }, 100);
 
-  const timer = setTimeout(() => {
-    focusInput(0);
-  }, 100);
-
-  return () => clearTimeout(timer);
-}, [router]);
-
+    return () => clearTimeout(timer);
+  }, [router]);
 
   // Resend cooldown countdown timer
   useEffect(() => {
@@ -82,13 +68,8 @@ useEffect(() => {
 
       try {
         await verifyAsync({ email, otp: value });
-
-        // Clean up session storage after successful verification
         sessionStorage.removeItem(EMAIL_KEY);
-
         setSuccess(true);
-
-        // Redirect to dashboard
         router.push("/dashboard");
       } catch (err) {
         const msg = err instanceof Error ? err.message : "";
@@ -116,7 +97,6 @@ useEffect(() => {
     const targetIdx = Math.min(start + digits.length, OTP_LENGTH - 1);
     focusInput(targetIdx);
 
-    // If fully filled via paste, auto submit
     const fullCode = next.join("");
     if (fullCode.length === OTP_LENGTH && !locked && !success) {
       void submit(fullCode);
@@ -182,50 +162,37 @@ useEffect(() => {
   const inputsDisabled = verifying || locked || success;
 
   return (
-    <main className="min-h-screen relative flex flex-col items-center justify-center bg-slate-950 px-4 py-8 overflow-hidden">
-      {/* Subtle background ambient light */}
-      <div
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-teal-500/10 blur-[100px] rounded-full"
-        aria-hidden="true"
-      />
-
-      <div className="w-full max-w-sm relative z-10">
+    <main className="auth-page">
+      <div className="auth-container">
         {/* Back Link */}
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => {
-              sessionStorage.removeItem(EMAIL_KEY);
-              router.replace("/login");
-            }}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-teal-400 transition-colors"
+        <button
+          type="button"
+          onClick={() => {
+            sessionStorage.removeItem(EMAIL_KEY);
+            router.replace("/login");
+          }}
+          className="auth-back"
+        >
+          <svg
+            width={12}
+            height={12}
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
           >
-            <svg
-              width={12}
-              height={12}
-              style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            <span>Use a different email</span>
-          </button>
-        </div>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          <span>Use a different email</span>
+        </button>
 
         {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center gap-2 mb-2">
-            <div
-              className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400"
-              style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px" }}
-            >
+        <div className="auth-brand">
+          <div className="auth-brand__badge">
+            <div className="auth-brand__icon">
               <svg
-                width={14}
-                height={14}
-                style={{ width: "14px", height: "14px", maxWidth: "14px", maxHeight: "14px", flexShrink: 0 }}
+                width="14"
+                height="14"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -238,63 +205,62 @@ useEffect(() => {
                 />
               </svg>
             </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              Check your inbox
+            <span className="logo">
+              Uni<span className="logo__accent">Vault</span>
             </span>
           </div>
-          <p className="text-slate-400 text-xs">
-            Enter the 6-digit code sent to{" "}
-            <span className="text-teal-300 font-medium">{email || "your email"}</span>
+          <h1 className="page-title">Verify code</h1>
+          <p className="pdf-meta">
+            We sent a 6-digit verification code to
+          </p>
+          <p className="section-label">
+            {email || "your university email"}
           </p>
         </div>
 
         {/* Card Form */}
-        <Card className="p-6 sm:p-7">
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
-            <div>
-              <div className="flex items-center justify-between mb-2.5">
-                <label className="block text-xs font-medium text-slate-300">
-                  Verification code
-                </label>
-                <span className="text-[10px] text-slate-500">Expires in 10m</span>
-              </div>
+        <Card>
+          <form onSubmit={handleSubmit} noValidate className="auth-form">
+            <div className="form-field">
+              <label
+                htmlFor="otp-0"
+                className="form-field__label text-center"
+              >
+                Enter 6-digit code
+              </label>
 
-              {/* Compact OTP 6-box inputs */}
-              <div className="flex gap-1.5 sm:gap-2 justify-between" onPaste={handlePaste}>
+              {/* 6 Digit Input Group */}
+              <div
+                className="otp-group"
+                onPaste={handlePaste}
+              >
                 {otp.map((digit, i) => (
                   <input
                     key={i}
+                    id={`otp-${i}`}
                     ref={(el) => {
                       inputRefs.current[i] = el;
                     }}
                     type="text"
                     inputMode="numeric"
-                    autoComplete={i === 0 ? "one-time-code" : "off"}
+                    pattern="[0-9]*"
+                    maxLength={1}
                     value={digit}
+                    disabled={inputsDisabled}
                     onChange={(e) => handleChange(i, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(i, e)}
                     onFocus={(e) => e.target.select()}
-                    disabled={inputsDisabled}
-                    aria-label={`Digit ${i + 1}`}
-                    aria-invalid={Boolean(error)}
-                    maxLength={1}
-                    className={`w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-lg bg-slate-950 text-white border transition-all focus:outline-none focus:ring-1.5 focus:ring-teal-400 focus:border-teal-400 disabled:opacity-50 ${
-                      error
-                        ? "border-red-500/80 focus:ring-red-400"
-                        : digit
-                        ? "border-teal-500/60 bg-teal-500/[0.04]"
-                        : "border-slate-800 hover:border-slate-700"
-                    }`}
+                    aria-label={`Digit ${i + 1} of 6`}
+                    className="otp-input"
                   />
                 ))}
               </div>
 
               {error && (
-                <div className="mt-2.5 flex items-center gap-1.5 text-xs text-red-400" role="alert">
+                <div className="status-message status-message--error" role="alert">
                   <svg
                     width={12}
                     height={12}
-                    style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth={2}
@@ -307,11 +273,10 @@ useEffect(() => {
               )}
 
               {info && !error && (
-                <div className="mt-2.5 flex items-center gap-1.5 text-xs text-teal-400" role="status">
+                <div className="status-message status-message--info" role="status">
                   <svg
                     width={12}
                     height={12}
-                    style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth={2}
@@ -324,12 +289,11 @@ useEffect(() => {
               )}
 
               {success && (
-                <div className="mt-2.5 flex items-center gap-1.5 text-xs text-teal-300" role="status">
+                <div className="status-message status-message--success" role="status">
                   <svg
                     className="animate-spin"
                     width={12}
                     height={12}
-                    style={{ width: "12px", height: "12px", maxWidth: "12px", maxHeight: "12px", flexShrink: 0 }}
                     fill="none"
                     viewBox="0 0 24 24"
                   >
@@ -346,18 +310,18 @@ useEffect(() => {
               size="md"
               loading={verifying}
               disabled={code.length !== OTP_LENGTH || locked || success}
-              className="w-full"
+              className="btn--full"
             >
               {success ? "Verified!" : verifying ? "Verifying code…" : "Verify OTP"}
             </Button>
 
-            <div className="pt-1 text-center text-xs text-slate-400 flex items-center justify-center gap-1">
+            <div className="auth-footer">
               <span>Didn&apos;t receive code?</span>
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={cooldown > 0 || resending || success}
-                className="font-medium text-teal-400 hover:text-teal-300 disabled:cursor-not-allowed disabled:text-slate-600 transition-colors"
+                className="section-header__link"
               >
                 {resending
                   ? "Sending..."

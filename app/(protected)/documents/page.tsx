@@ -76,20 +76,20 @@ export default function DocumentsPage() {
     }
   }
 
-  const searchType = data && "searchType" in data
-    ? data.searchType
-    : "keyword";
+  const searchType =
+    data && "searchType" in data ? data.searchType : "keyword";
 
-  const fallbackReason = data && "fallbackReason" in data
-    ? (data.fallbackReason as string | undefined)
-    : undefined;
+  const fallbackReason =
+    data && "fallbackReason" in data
+      ? (data.fallbackReason as string | undefined)
+      : undefined;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-4">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Document Library</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <h1 className="page-title">Document Library</h1>
+        <p className="pdf-meta mt-1">
           Browse and search academic resources shared by your peers.
         </p>
       </div>
@@ -107,7 +107,7 @@ export default function DocumentsPage() {
         <select
           value={params.subject ?? ""}
           onChange={(e) => handleSubject(e.target.value)}
-          className="px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+          className="select"
         >
           <option value="">All subjects</option>
           {(subjects ?? []).map((s) => (
@@ -122,7 +122,7 @@ export default function DocumentsPage() {
           <select
             value={`${params.sort ?? "created_at"}-${params.order ?? "desc"}`}
             onChange={handleSort}
-            className="px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+            className="select"
           >
             <option value="created_at-desc">Newest first</option>
             <option value="created_at-asc">Oldest first</option>
@@ -137,35 +137,24 @@ export default function DocumentsPage() {
         <div className="flex items-center gap-3">
           {/* Toggle button */}
           <button
+            type="button"
             onClick={() => setUseSemanticMode((v) => !v)}
-            className={`
-              relative inline-flex h-6 w-11 items-center rounded-full
-              transition-colors focus:outline-none focus:ring-2
-              focus:ring-teal-500 focus:ring-offset-2
-              focus:ring-offset-slate-900
-              ${useSemanticMode ? "bg-teal-500" : "bg-slate-700"}
-            `}
+            className={`toggle-switch ${useSemanticMode ? "toggle-switch--active" : ""}`}
             role="switch"
             aria-checked={useSemanticMode}
             aria-label="Toggle semantic search"
           >
-            <span
-              className={`
-                inline-block h-4 w-4 transform rounded-full bg-white
-                transition-transform
-                ${useSemanticMode ? "translate-x-6" : "translate-x-1"}
-              `}
-            />
+            <span className="toggle-switch__thumb" />
           </button>
-          <span className="text-sm text-slate-400">
+          <span className="pdf-meta">
             Semantic search
             {useSemanticMode && queryText && (
-              <span className="ml-2 text-xs text-teal-400">
+              <span className="logo__accent">
                 {queryText.length < 3
-                  ? "— type 3+ characters"
+                  ? " — type 3+ characters"
                   : searchType === "semantic"
-                  ? "— AI content-matched"
-                  : "— using keyword fallback"}
+                  ? " — AI content-matched"
+                  : " — using keyword fallback"}
               </span>
             )}
           </span>
@@ -173,7 +162,7 @@ export default function DocumentsPage() {
 
         {/* Results count */}
         {!isLoading && data && (
-          <p className="text-sm text-slate-500">
+          <p className="pdf-meta">
             {data.pagination.total === 0
               ? "No documents found"
               : `${data.pagination.total} result${
@@ -181,8 +170,7 @@ export default function DocumentsPage() {
                 }`}
             {params.q && (
               <span>
-                {" "}for{" "}
-                <span className="text-slate-300">&quot;{params.q}&quot;</span>
+                {" "}for <span className="logo__accent">&quot;{params.q}&quot;</span>
               </span>
             )}
           </p>
@@ -191,8 +179,8 @@ export default function DocumentsPage() {
 
       {/* Fallback notice */}
       {fallbackReason && (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3">
-          <p className="text-sm text-yellow-400">{fallbackReason}</p>
+        <div className="card">
+          <p className="pdf-meta text-yellow-400">{fallbackReason}</p>
         </div>
       )}
 

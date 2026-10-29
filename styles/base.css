@@ -1,0 +1,122 @@
+/* ==========================================================================
+   styles/base.css — CSS reset, root variables, body defaults
+   UniVault Design System
+   ========================================================================== */
+
+:root {
+  /* Color Tokens */
+  --color-bg: #0f141f;
+  --color-surface: #182030;
+  --color-surface-hover: #1f2a3f;
+  --color-border: #28354d;
+  --color-accent: #e8dcc8;
+  --color-accent-hover: #f3ebd9;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #cbd5e1;
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+
+  /* Font Stack - Clean, modern readable serif with premium fallbacks */
+  --font-family: 'Cambria', 'Book Antiqua', Georgia, Palatino, serif;
+
+  /* Border Radii */
+  --radius-card: 14px;
+  --radius-btn: 10px;
+  --radius-icon: 10px;
+  --radius-badge: 6px;
+  --radius-avatar: 50%;
+
+  /* Borders */
+  --border: 1px solid var(--color-border);
+  --border-hover: 1px solid var(--color-accent);
+
+  /* Fluid Spacing Scale - Generous, airy breathing room */
+  --spacing-page: clamp(16px, 4vw, 40px);
+  --spacing-card: clamp(16px, 2.5vw, 24px);
+  --spacing-gap: clamp(12px, 2vw, 20px);
+
+  /* Fluid Typography Scale - Clear hierarchy */
+  --font-size-logo: clamp(18px, 2.2vw, 22px);
+  --font-size-hero: clamp(28px, 5vw, 48px);
+  --font-size-heading: clamp(20px, 3vw, 28px);
+  --font-size-subheading: clamp(16px, 2vw, 20px);
+  --font-size-body: clamp(14px, 1.4vw, 15px);
+  --font-size-label: clamp(11px, 1.1vw, 12px);
+  --font-size-meta: clamp(12px, 1.2vw, 13px);
+  --font-size-badge: clamp(10px, 1vw, 11px);
+
+  /* Fluid Component Dimensions */
+  --avatar-size: clamp(34px, 4vw, 40px);
+  --icon-box-size: clamp(36px, 4vw, 44px);
+  --btn-padding: clamp(10px, 1.5vw, 12px) clamp(18px, 2.5vw, 24px);
+  --card-radius: var(--radius-card);
+  --btn-radius: var(--radius-btn);
+}
+
+/* CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+p, span, div, label, input, button, select, textarea {
+  font-family: var(--font-family);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: var(--font-family);
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

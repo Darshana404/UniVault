@@ -11,39 +11,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
-      <div className="w-full">
+      <div className="form-field">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-slate-300 mb-1.5"
-          >
+          <label htmlFor={inputId} className="form-field__label">
             {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
-          className={`
-            w-full px-4 py-2.5 rounded-lg text-slate-100 placeholder-slate-500
-            bg-slate-800 border transition-colors
-            focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
-            disabled:opacity-50 disabled:cursor-not-allowed
-            ${error
-              ? "border-red-500 focus:ring-red-500"
-              : "border-slate-700 hover:border-slate-600"
-            }
-            ${className}
-          `}
+          className={`form-field__input ${error ? "form-field__input--error" : ""} ${className}`.trim()}
           {...props}
         />
         {error && (
-          <p className="mt-1.5 text-sm text-red-400" role="alert">
+          <p className="form-field__error" role="alert">
             {error}
           </p>
         )}
-        {hint && !error && (
-          <p className="mt-1.5 text-sm text-slate-500">{hint}</p>
-        )}
+        {hint && !error && <p className="form-field__hint">{hint}</p>}
       </div>
     );
   }

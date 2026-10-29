@@ -51,7 +51,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
- -    - name: Debug model file hashes
+      - name: Debug model file hashes
         run: |
           echo "=== Git commit ==="
           git rev-parse HEAD

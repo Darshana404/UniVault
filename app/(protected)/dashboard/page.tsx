@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import "@/styles/pages/home.css";
-import { useCurrentUser } from "@/hooks/useAuth";
+//import { useCurrentUser } from "@/hooks/useAuth";
 import { useDocuments, useSubjects } from "@/hooks/useDocuments";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 import { Spinner } from "@/components/ui/Spinner";
 
 export default function DashboardPage() {
-  const { data: user } = useCurrentUser();
+  //const { data: user } = useCurrentUser();
   const { data: subjects } = useSubjects();
 
   // Fetch the 6 most recent approved documents

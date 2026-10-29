@@ -56,6 +56,26 @@ jobs:
           sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
           grep 'Xenova/all-MiniLM-L6-v2/config.json' models/MODEL_MANIFEST.txt
 
+      - name: Debug model config contents
+        run: |
+          echo "=== Git commit ==="
+          git rev-parse HEAD
+
+          echo "=== File contents in CI ==="
+          cat models/Xenova/all-MiniLM-L6-v2/config.json
+
+          echo "=== Git-tracked file contents ==="
+          git show HEAD:models/Xenova/all-MiniLM-L6-v2/config.json
+
+          echo "=== File attributes ==="
+          git check-attr -a -- models/Xenova/all-MiniLM-L6-v2/config.json
+
+          echo "=== Hashes ==="
+          sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
+          git show HEAD:models/Xenova/all-MiniLM-L6-v2/config.json | sha256sum
+
+
+
       - name: Unit tests
         run: npx vitest run --passWithNoTests
 

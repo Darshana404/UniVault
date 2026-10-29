@@ -51,6 +51,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Debug model config hash
+        run: |
+          sha256sum models/Xenova/all-MiniLM-L6-v2/config.json
+          grep 'Xenova/all-MiniLM-L6-v2/config.json' models/MODEL_MANIFEST.txt
+
       - name: Unit tests
         run: npx vitest run --passWithNoTests
 

@@ -1,7 +1,7 @@
-// Degree-programme taxonomy for uploads.
+// Course taxonomy for uploads.
 // A document passes when it contains at least `minMatches` of its declared
-// programme's keywords. Matching is whole-word and case-insensitive.
-// Programme names are stored in documents.subject, so do not rename them
+// course's keywords. Matching is whole-word and case-insensitive.
+// Course names are stored in documents.subject, so do not rename them
 // once documents exist.
 
 export interface SubjectDefinition {
@@ -11,167 +11,556 @@ export interface SubjectDefinition {
 }
 
 export const SUBJECT_TAXONOMY: SubjectDefinition[] = [
+
+  // ── COMMON FIRST YEAR ──────────────────────────────────────────────────
   {
-    name: "Common (First Year)",
-    minMatches: 3,
+    name: "Calculus",
+    minMatches: 2,
     keywords: [
-      "engineering mathematics", "calculus", "differential equation",
-      "engineering physics", "engineering chemistry", "engineering graphics",
-      "linear algebra", "laplace transform", "eigenvalue",
-      "partial derivative", "engineering mechanics", "environmental science",
+      "calculus", "differentiation", "integration", "limits",
+      "derivative", "integral", "taylor series", "maclaurin",
+      "partial derivative", "multivariable", "vector calculus",
     ],
   },
   {
-    name: "B.Tech CSE (Core)",
-    minMatches: 3,
+    name: "Linear Algebra",
+    minMatches: 2,
     keywords: [
-      "data structure", "algorithm", "operating system", "compiler",
-      "database management", "normalization", "deadlock", "scheduling",
-      "paging", "object oriented programming", "recursion", "big-o",
-      "computer network", "tcp/ip", "software engineering", "automata",
-      "turing machine", "context-free grammar", "process synchronization",
-      "virtual memory",
+      "linear algebra", "matrix", "eigenvalue", "eigenvector",
+      "vector space", "determinant", "rank", "span", "basis",
+      "linear transformation", "orthogonality",
     ],
   },
   {
-    name: "B.Tech CSE (Cyber Security)",
-    minMatches: 3,
+    name: "Discrete Mathematics",
+    minMatches: 2,
     keywords: [
-      "cybersecurity", "cryptography", "encryption", "firewall", "intrusion",
-      "malware", "penetration testing", "vulnerability", "phishing",
-      "ethical hacking", "digital forensics", "network security",
-      "access control", "threat", "exploit", "zero trust", "ssl", "tls",
-      "public key", "symmetric key", "hash function", "authentication",
+      "discrete mathematics", "propositional logic",
+      "set theory", "relations", "combinatorics",
+      "permutation", "combination", "graph theory",
+      "recurrence relation", "boolean algebra",
     ],
   },
   {
-    name: "B.Tech CSE (IoT)",
-    minMatches: 3,
+    name: "Probability and Statistics",
+    minMatches: 2,
     keywords: [
-      "internet of things", "iot", "arduino", "raspberry pi", "mqtt",
-      "zigbee", "lorawan", "wireless sensor network", "edge computing",
-      "rtos", "smart home", "telemetry", "embedded system", "gateway",
-      "bluetooth", "microcontroller", "cloud gateway", "sensor node",
+      "probability", "statistics", "random variable", "distribution",
+      "mean", "variance", "standard deviation", "hypothesis testing",
+      "bayes theorem", "normal distribution",
+      "binomial distribution", "poisson", "stochastic",
     ],
   },
   {
-    name: "B.Tech AI & DS",
-    minMatches: 3,
+    name: "Engineering Physics",
+    minMatches: 2,
     keywords: [
-      "machine learning", "deep learning", "neural network", "data science",
-      "regression", "classification model", "supervised learning",
-      "unsupervised learning", "clustering", "natural language processing",
-      "computer vision", "reinforcement learning", "feature engineering",
-      "random forest", "gradient descent", "tensorflow", "pytorch",
-      "pandas", "numpy", "data visualization", "decision tree",
+      "engineering physics", "wave", "optics", "quantum mechanics",
+      "laser", "fiber optics", "semiconductor physics",
+      "thermodynamics", "electromagnetism",
     ],
   },
   {
-    name: "B.Tech IT",
-    minMatches: 3,
+    name: "Engineering Graphics",
+    minMatches: 2,
     keywords: [
-      "web development", "html", "css", "javascript", "cloud computing",
-      "devops", "information systems", "erp", "rest api", "virtualization",
-      "system administration", "frontend", "backend", "docker", "kubernetes",
-      "it infrastructure", "web application", "enterprise application",
+      "engineering graphics", "orthographic projection",
+      "isometric", "sectional view", "cad drawing",
+      "autocad", "dimensioning", "blueprint",
     ],
   },
   {
-    name: "B.Tech ECE",
-    minMatches: 3,
+    name: "Communicative English",
+    minMatches: 2,
     keywords: [
-      "analog electronics", "digital electronics", "communication system",
-      "modulation", "demodulation", "antenna", "transistor", "microwave",
-      "vlsi", "signal processing", "fourier transform", "op-amp",
-      "operational amplifier", "fpga", "verilog", "vhdl",
-      "radio frequency", "bandwidth", "pcb", "filter design",
+      "communicative english", "technical writing", "grammar",
+      "vocabulary", "reading comprehension", "writing skills",
+      "presentation skills", "professional communication",
     ],
   },
   {
-    name: "B.Tech EEE",
-    minMatches: 3,
+    name: "Environmental Science and Engineering",
+    minMatches: 2,
     keywords: [
-      "power system", "electrical machine", "induction motor",
-      "synchronous machine", "power electronics", "transmission line",
-      "generator", "inverter", "rectifier", "high voltage", "switchgear",
-      "power grid", "load flow", "protection relay", "dc machine",
-      "three-phase", "kirchhoff", "ohm's law", "transformer",
+      "environmental science", "pollution", "ecosystem",
+      "biodiversity", "climate change", "waste management",
+      "renewable energy", "sustainability", "environmental impact",
     ],
   },
   {
-    name: "B.Tech Mechanical",
-    minMatches: 3,
+    name: "Professional Ethics and Human Values",
+    minMatches: 2,
     keywords: [
-      "thermodynamics", "fluid mechanics", "heat transfer", "machine design",
-      "kinematics", "manufacturing process", "casting", "welding", "machining",
-      "lathe", "finite element", "stress analysis", "strength of materials",
-      "gear", "bearing", "turbine", "ic engine", "refrigeration",
-      "mechatronics", "cad",
+      "professional ethics", "human values", "moral",
+      "intellectual property", "plagiarism", "code of conduct",
+      "engineering ethics", "social responsibility",
+    ],
+  },
+
+  // ── CSE CORE ───────────────────────────────────────────────────────────
+  {
+    name: "Problem Solving and Programming in C",
+    minMatches: 2,
+    keywords: [
+      "programming in c", "c language", "c program",
+      "printf", "scanf", "pointer", "array in c",
+      "function in c", "struct", "file handling in c",
+      "problem solving", "flowchart",
     ],
   },
   {
-    name: "B.Tech Civil",
-    minMatches: 3,
+    name: "Object Oriented Programming",
+    minMatches: 2,
     keywords: [
-      "structural analysis", "reinforced concrete", "concrete", "geotechnical",
-      "soil mechanics", "foundation", "surveying", "highway", "bridge",
-      "hydraulics", "water supply", "transportation engineering",
-      "building construction", "bitumen", "pavement", "rcc",
-      "steel structure", "retaining wall", "footing",
+      "object oriented", "oop", "class", "object",
+      "inheritance", "polymorphism", "encapsulation", "abstraction",
+      "constructor", "destructor", "overloading", "overriding",
+      "interface", "c++", "java",
     ],
   },
   {
-    name: "B.Tech Chemical",
-    minMatches: 3,
+    name: "Data Structures",
+    minMatches: 2,
     keywords: [
-      "reactor", "distillation", "mass transfer", "heat exchanger",
-      "process control", "chemical process", "unit operations",
-      "reaction kinetics", "chemical engineering", "petroleum",
-      "crystallization", "evaporation", "absorption", "catalysis",
-      "fluidized bed", "separation process", "process plant",
+      "data structure", "linked list", "stack", "queue",
+      "binary tree", "bst", "heap", "hashing",
+      "traversal", "inorder", "preorder", "postorder",
+      "sorting", "searching",
     ],
   },
   {
-    name: "B.Tech Biomedical Engineering",
-    minMatches: 3,
+    name: "Design and Analysis of Algorithms",
+    minMatches: 2,
     keywords: [
-      "biomedical", "medical device", "biosignal", "ecg", "eeg",
-      "medical imaging", "prosthesis", "biomaterial", "tissue engineering",
-      "physiological", "clinical", "diagnostic", "biosensor", "mri",
-      "ultrasound", "patient monitoring", "bio instrumentation", "pacemaker",
+      "algorithm", "time complexity", "space complexity",
+      "big o", "divide and conquer", "dynamic programming",
+      "greedy", "backtracking", "np complete", "np hard",
+      "sorting algorithm", "graph algorithm", "shortest path",
+      "minimum spanning tree", "kruskal", "dijkstra",
     ],
   },
   {
-    name: "B.Com Professional Accounting",
-    minMatches: 3,
+    name: "Database Management Systems",
+    minMatches: 2,
     keywords: [
-      "accounting", "balance sheet", "journal entry", "ledger",
-      "trial balance", "depreciation", "financial statement", "auditing",
-      "income tax", "gst", "cost accounting", "profit and loss",
-      "accounting standard", "bookkeeping", "goodwill",
-      "partnership accounts", "companies act", "auditor",
+      "database", "dbms", "sql", "normalization",
+      "entity relationship", "er diagram", "relational model",
+      "transaction", "acid", "indexing", "query optimization",
+      "primary key", "foreign key", "nosql",
     ],
   },
   {
-    name: "B.Com General",
-    minMatches: 3,
+    name: "Operating Systems",
+    minMatches: 2,
     keywords: [
-      "commerce", "business", "marketing", "management",
-      "human resource", "organisational behaviour", "entrepreneurship",
-      "corporate", "banking", "insurance", "business law", "contract act",
-      "supply chain", "consumer behaviour", "brand", "sales",
-      "stock market", "budgeting",
+      "operating system", "process", "thread", "scheduling",
+      "deadlock", "memory management", "paging", "segmentation",
+      "virtual memory", "file system", "ipc",
+      "semaphore", "mutex", "synchronization", "kernel",
     ],
   },
   {
-    name: "B.Sc Economics",
-    minMatches: 3,
+    name: "Computer Organization and Architecture",
+    minMatches: 2,
     keywords: [
-      "economics", "microeconomics", "macroeconomics", "demand curve",
-      "supply curve", "elasticity", "inflation", "gdp", "monetary policy",
-      "fiscal policy", "market structure", "monopoly", "oligopoly",
-      "game theory", "econometrics", "consumer surplus", "producer surplus",
-      "keynesian", "unemployment", "balance of payments", "national income",
+      "computer organization", "computer architecture", "coa",
+      "instruction set", "isa", "cpu", "alu", "control unit",
+      "pipeline", "cache", "memory hierarchy", "risc", "cisc",
+      "addressing mode", "register", "interrupt",
+    ],
+  },
+  {
+    name: "Computer Networks",
+    minMatches: 2,
+    keywords: [
+      "computer network", "osi model", "tcp", "udp",
+      "network layer", "transport layer", "routing",
+      "switching", "mac address", "ethernet", "dns",
+      "http", "socket", "bandwidth", "protocol",
+    ],
+  },
+  {
+    name: "Theory of Computation",
+    minMatches: 2,
+    keywords: [
+      "theory of computation", "automata", "finite automaton",
+      "dfa", "nfa", "regular expression", "context free grammar",
+      "pushdown automaton", "turing machine", "decidability",
+      "halting problem", "pumping lemma", "cfg",
+    ],
+  },
+  {
+    name: "Software Engineering",
+    minMatches: 2,
+    keywords: [
+      "software engineering", "sdlc", "software development",
+      "requirements analysis", "uml", "use case",
+      "agile", "scrum", "waterfall", "testing",
+      "software design", "design pattern", "software architecture",
+    ],
+  },
+  {
+    name: "Web Technologies",
+    minMatches: 2,
+    keywords: [
+      "web technology", "html", "css", "javascript",
+      "frontend", "backend", "rest api", "json",
+      "react", "nodejs", "php", "web application",
+      "responsive design", "dom", "ajax",
+    ],
+  },
+  {
+    name: "Cloud Computing",
+    minMatches: 2,
+    keywords: [
+      "cloud computing", "iaas", "paas", "saas",
+      "aws", "azure", "google cloud", "virtualization",
+      "docker", "kubernetes", "microservices",
+      "serverless", "cloud storage", "cloud deployment",
+    ],
+  },
+  {
+    name: "Distributed Systems",
+    minMatches: 2,
+    keywords: [
+      "distributed system", "distributed computing",
+      "consistency", "cap theorem", "fault tolerance",
+      "replication", "consensus", "raft", "paxos",
+      "message passing", "rpc", "distributed database",
+      "load balancing", "horizontal scaling",
+    ],
+  },
+
+  // ── CYBER SECURITY ─────────────────────────────────────────────────────
+  {
+    name: "Cyber Security Essentials",
+    minMatches: 2,
+    keywords: [
+      "cyber security", "information security", "cia triad",
+      "confidentiality", "integrity", "availability",
+      "threat", "vulnerability", "risk", "attack",
+      "security policy", "firewall", "antivirus",
+    ],
+  },
+  {
+    name: "Classical Cryptography",
+    minMatches: 2,
+    keywords: [
+      "classical cryptography", "caesar cipher", "substitution cipher",
+      "transposition cipher", "vigenere", "playfair",
+      "one time pad", "frequency analysis", "ciphertext",
+      "plaintext", "cryptanalysis",
+    ],
+  },
+  {
+    name: "Modern Cryptography",
+    minMatches: 2,
+    keywords: [
+      "modern cryptography", "aes", "des", "rsa",
+      "public key cryptography", "private key", "symmetric key",
+      "asymmetric encryption", "digital signature",
+      "hash function", "sha", "md5", "diffie hellman",
+      "elliptic curve", "key exchange",
+    ],
+  },
+  {
+    name: "System Security Management",
+    minMatches: 2,
+    keywords: [
+      "system security", "access control", "authentication",
+      "authorization", "privilege", "patch management",
+      "hardening", "vulnerability assessment", "security audit",
+      "incident response", "security management",
+    ],
+  },
+  {
+    name: "Network Penetration Testing",
+    minMatches: 2,
+    keywords: [
+      "penetration testing", "pentest", "network pen test",
+      "nmap", "metasploit", "exploitation", "scanning",
+      "enumeration", "footprinting", "reconnaissance",
+      "network attack", "port scanning",
+    ],
+  },
+  {
+    name: "Ethical Hacking and Social Engineering",
+    minMatches: 2,
+    keywords: [
+      "ethical hacking", "social engineering", "phishing",
+      "pretexting", "spear phishing", "vishing",
+      "white hat", "black hat", "bug bounty",
+      "ceh", "security testing", "hacking methodology",
+    ],
+  },
+  {
+    name: "Cyber Forensics",
+    minMatches: 2,
+    keywords: [
+      "cyber forensics", "digital forensics", "forensic investigation",
+      "evidence collection", "chain of custody", "disk image",
+      "forensic tools", "log analysis", "memory forensics",
+      "network forensics", "incident investigation",
+    ],
+  },
+  {
+    name: "Web Application Security",
+    minMatches: 2,
+    keywords: [
+      "web application security", "owasp", "sql injection",
+      "xss", "cross site scripting", "csrf",
+      "broken authentication", "insecure deserialization",
+      "security misconfiguration", "burp suite",
+      "web vulnerability", "input validation",
+    ],
+  },
+  {
+    name: "Intrusion Detection Systems",
+    minMatches: 2,
+    keywords: [
+      "intrusion detection", "ids", "ips",
+      "intrusion prevention", "anomaly detection",
+      "signature based", "network monitoring",
+      "siem", "log monitoring", "alert",
+    ],
+  },
+  {
+    name: "Blockchain Technology",
+    minMatches: 2,
+    keywords: [
+      "blockchain", "distributed ledger", "smart contract",
+      "ethereum", "bitcoin", "consensus mechanism",
+      "proof of work", "proof of stake", "nft",
+      "decentralized", "cryptocurrency", "solidity",
+    ],
+  },
+  {
+    name: "Quantum Cryptography",
+    minMatches: 2,
+    keywords: [
+      "quantum cryptography", "quantum key distribution",
+      "qkd", "bb84", "quantum entanglement",
+      "post quantum", "quantum computing security",
+      "qubit", "quantum channel",
+    ],
+  },
+
+  // ── AI & DATA SCIENCE ──────────────────────────────────────────────────
+  {
+    name: "Foundations of Artificial Intelligence",
+    minMatches: 2,
+    keywords: [
+      "artificial intelligence", "search algorithm",
+      "bfs", "dfs", "a star", "heuristic",
+      "knowledge representation", "expert system",
+      "inference engine", "planning",
+      "constraint satisfaction",
+    ],
+  },
+  {
+    name: "Machine Learning Techniques",
+    minMatches: 2,
+    keywords: [
+      "machine learning", "supervised learning", "unsupervised learning",
+      "linear regression", "logistic regression", "decision tree",
+      "random forest", "svm", "support vector machine",
+      "k nearest neighbour", "k means", "clustering",
+      "cross validation", "overfitting", "underfitting",
+    ],
+  },
+  {
+    name: "Deep Learning",
+    minMatches: 2,
+    keywords: [
+      "deep learning", "neural network", "cnn", "rnn",
+      "lstm", "transformer", "attention mechanism",
+      "backpropagation", "gradient descent", "activation function",
+      "dropout", "batch normalization", "tensorflow", "pytorch",
+    ],
+  },
+  {
+    name: "Natural Language Processing",
+    minMatches: 2,
+    keywords: [
+      "natural language processing", "nlp", "text classification",
+      "sentiment analysis", "tokenization", "stemming",
+      "named entity recognition", "ner", "pos tagging",
+      "word embedding", "word2vec", "bert", "language model",
+    ],
+  },
+  {
+    name: "Computer Vision",
+    minMatches: 2,
+    keywords: [
+      "computer vision", "image classification", "object detection",
+      "image segmentation", "feature extraction", "opencv",
+      "yolo", "convolutional", "image processing",
+      "edge detection", "face recognition",
+    ],
+  },
+  {
+    name: "Big Data Analytics",
+    minMatches: 2,
+    keywords: [
+      "big data", "hadoop", "spark", "mapreduce",
+      "hdfs", "hive", "pig", "kafka",
+      "data pipeline", "batch processing", "stream processing",
+      "data warehouse", "etl", "olap",
+    ],
+  },
+  {
+    name: "Data Visualization and Mining",
+    minMatches: 2,
+    keywords: [
+      "data visualization", "data mining", "association rule",
+      "apriori", "frequent itemset", "anomaly detection",
+      "dashboard", "tableau", "power bi", "matplotlib",
+      "seaborn", "d3.js",
+    ],
+  },
+
+  // ── IoT ────────────────────────────────────────────────────────────────
+  {
+    name: "Fundamentals of IoT",
+    minMatches: 2,
+    keywords: [
+      "internet of things", "iot", "iot architecture",
+      "iot protocol", "mqtt", "coap", "smart device",
+      "connected device", "iot platform", "iot gateway",
+      "iot application", "iot ecosystem",
+    ],
+  },
+  {
+    name: "Sensor Integration and Microcontrollers",
+    minMatches: 2,
+    keywords: [
+      "sensor", "microcontroller", "arduino", "raspberry pi",
+      "gpio", "analog sensor", "digital sensor",
+      "adc", "dac", "i2c", "spi", "uart",
+      "actuator", "servo", "temperature sensor",
+    ],
+  },
+  {
+    name: "Wireless Communication Techniques",
+    minMatches: 2,
+    keywords: [
+      "wireless communication", "bluetooth", "zigbee",
+      "lora", "lorawan", "wifi", "nfc", "rfid",
+      "5g", "cellular", "wsn", "wireless sensor network",
+      "frequency band", "modulation", "channel",
+    ],
+  },
+  {
+    name: "Edge Intelligence",
+    minMatches: 2,
+    keywords: [
+      "edge computing", "edge intelligence", "fog computing",
+      "edge ai", "on device", "tinyml", "inference at edge",
+      "latency", "edge node", "edge server",
+    ],
+  },
+  {
+    name: "Embedded System Architecture",
+    minMatches: 2,
+    keywords: [
+      "embedded system", "rtos", "real time operating system",
+      "firmware", "bootloader", "interrupt handler",
+      "memory mapped", "microprocessor", "arm cortex",
+      "embedded c", "bare metal",
+    ],
+  },
+  {
+    name: "Foundation of Robotics",
+    minMatches: 2,
+    keywords: [
+      "robotics", "robot", "kinematics", "ros",
+      "path planning", "robot operating system",
+      "servo control", "actuator", "robot arm",
+      "autonomous robot", "drone", "pid controller",
+    ],
+  },
+
+  // ── ECE ────────────────────────────────────────────────────────────────
+  {
+    name: "Electronic Devices and Circuits",
+    minMatches: 2,
+    keywords: [
+      "electronic devices", "diode", "transistor", "bjt",
+      "mosfet", "fet", "amplifier", "biasing",
+      "rectifier", "clipper", "clamper", "zener",
+      "op amp", "operational amplifier",
+    ],
+  },
+  {
+    name: "Digital Logic Design",
+    minMatches: 2,
+    keywords: [
+      "digital logic", "logic gate", "boolean", "karnaugh map",
+      "combinational circuit", "sequential circuit",
+      "flip flop", "latch", "counter", "register",
+      "multiplexer", "demultiplexer", "encoder", "decoder",
+      "adder", "subtractor",
+    ],
+  },
+  {
+    name: "Signals and Systems",
+    minMatches: 2,
+    keywords: [
+      "signals and systems", "continuous signal", "discrete signal",
+      "fourier transform", "laplace transform", "z transform",
+      "convolution", "impulse response", "transfer function",
+      "frequency response", "sampling theorem",
+    ],
+  },
+  {
+    name: "Digital Signal Processing",
+    minMatches: 2,
+    keywords: [
+      "digital signal processing", "dsp", "fft",
+      "discrete fourier transform", "filter design",
+      "iir filter", "fir filter", "digital filter",
+      "windowing", "quantization", "dft",
+    ],
+  },
+  {
+    name: "Analog and Digital Communication",
+    minMatches: 2,
+    keywords: [
+      "analog communication", "digital communication",
+      "amplitude modulation", "frequency modulation",
+      "phase modulation", "am", "fm", "pm",
+      "ask", "fsk", "psk", "qam",
+      "noise", "snr", "channel capacity",
+    ],
+  },
+  {
+    name: "VLSI Design",
+    minMatches: 2,
+    keywords: [
+      "vlsi", "very large scale integration",
+      "cmos", "fpga", "verilog", "vhdl",
+      "logic synthesis", "place and route",
+      "timing analysis", "chip design", "asic",
+    ],
+  },
+  {
+    name: "Electromagnetics and Antennas",
+    minMatches: 2,
+    keywords: [
+      "electromagnetics", "antenna", "maxwell equation",
+      "wave propagation", "transmission line",
+      "radiation pattern", "gain", "dipole antenna",
+      "microwave", "rf", "radio frequency",
+    ],
+  },
+  {
+    name: "Microprocessors and Microcontrollers",
+    minMatches: 2,
+    keywords: [
+      "microprocessor", "8085", "8086", "assembly language",
+      "instruction set", "addressing mode",
+      "interrupt", "dma", "memory interface",
+      "peripheral", "bus interface",
     ],
   },
 ];

@@ -1,0 +1,16 @@
+# ZAP Baseline Scan Rules Configuration
+# Format: <rule-id>\t<threshold>\t<comment>
+# Thresholds: IGNORE, INFO, WARN, FAIL
+# Fails on high severity (FAIL), while warnings/info are reported without breaking baseline.
+
+10015	WARN	Re-examine Cache-Control Directives
+10020	WARN	Anti-CSRF Tokens Check (API/auth handled via tokens & cookies)
+10021	WARN	X-Content-Type-Options Header
+10027	WARN	Information Disclosure - Suspicious Comments
+10035	WARN	Strict-Transport-Security Header
+10038	WARN	Content Security Policy (CSP) Header Not Set
+10054	WARN	Cookie Without SameSite Attribute
+10055	WARN	CSP: script-src unsafe-eval / unsafe-inline
+10096	WARN	Timestamp Disclosure
+10109	WARN	Modern Web Application (SPA / Dynamic Routing)
+

@@ -4,7 +4,7 @@
 
 import { createServiceClient } from "@/lib/supabase/server";
 import { config } from "@/lib/config";
-import { getEmbeddingProvider } from "./embedding";
+import { getEmbeddingProvider, buildDocumentEmbeddingText } from "./embedding";
 import { chunkDocumentText } from "./chunking";
 import { extractTextFromPDF } from "@/lib/pdf/extractor";
 
@@ -37,54 +37,26 @@ export async function generateAndStoreEmbedding(
     );
 
   try {
-    // Split document into chunks (approx 800 chars each with overlap)
-    const chunks = chunkDocumentText(options.extractedText ?? "", {
+    const provider = getEmbeddingProvider();
+
+    // Generate primary document-level embedding for pgvector document matching
+    const docText = buildDocumentEmbeddingText({
       title: options.title,
       subject: options.subject,
       description: options.description,
-      maxChunkSize: 800,
-      overlap: 120,
+      extractedText: options.extractedText,
     });
 
-    const provider = getEmbeddingProvider();
+    const docEmbedding = await provider.generateEmbedding(docText);
 
-    // Generate vector embeddings for all chunks in batch
-    const chunkTexts = chunks.map((c) => c.content);
-    const embeddingResults = await provider.generateBatchEmbeddings(chunkTexts);
-
-    if (embeddingResults.length === 0) {
-      throw new Error("No embeddings generated for document chunks.");
-    }
-
-    // Replace old chunks for this document
-    await supabase
-      .from("document_chunks")
-      .delete()
-      .eq("document_id", options.documentId);
-
-    // Prepare rows for document_chunks table
-    const chunkRows = chunks.map((chunk, i) => ({
-      document_id: options.documentId,
-      chunk_index: chunk.index,
-      content: chunk.content,
-      embedding: JSON.stringify(embeddingResults[i]?.embedding ?? []),
-    }));
-
-    const { error: chunkError } = await supabase
-      .from("document_chunks")
-      .insert(chunkRows);
-
-    if (chunkError) {
-      throw new Error(`Failed to store chunks: ${chunkError.message}`);
-    }
-
-    // Mark document_embeddings as SUCCESS
+    // Save embedding directly to document_embeddings table
     const { error: statusError } = await supabase
       .from("document_embeddings")
       .upsert(
         {
           document_id: options.documentId,
-          embedding_model: embeddingResults[0]?.model ?? config.embedding.model,
+          embedding: JSON.stringify(docEmbedding.embedding),
+          embedding_model: docEmbedding.model ?? config.embedding.model,
           embedding_status: "SUCCESS",
           error_message: null,
           updated_at: new Date().toISOString(),
@@ -94,6 +66,38 @@ export async function generateAndStoreEmbedding(
 
     if (statusError) {
       throw new Error(`Failed to update status: ${statusError.message}`);
+    }
+
+    // Optionally store chunk-level embeddings if document_chunks table exists
+    try {
+      const chunks = chunkDocumentText(options.extractedText ?? "", {
+        title: options.title,
+        subject: options.subject,
+        description: options.description,
+        maxChunkSize: 800,
+        overlap: 120,
+      });
+
+      if (chunks.length > 0) {
+        const chunkTexts = chunks.map((c) => c.content);
+        const embeddingResults = await provider.generateBatchEmbeddings(chunkTexts);
+
+        await supabase
+          .from("document_chunks")
+          .delete()
+          .eq("document_id", options.documentId);
+
+        const chunkRows = chunks.map((chunk, i) => ({
+          document_id: options.documentId,
+          chunk_index: chunk.index,
+          content: chunk.content,
+          embedding: JSON.stringify(embeddingResults[i]?.embedding ?? []),
+        }));
+
+        await supabase.from("document_chunks").insert(chunkRows);
+      }
+    } catch {
+      // document_chunks table is optional; ignore if not present in schema
     }
 
     return true;

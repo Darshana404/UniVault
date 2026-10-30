@@ -8,7 +8,7 @@ import { keywordSearch } from "./keyword";
 import type { DocumentListItem } from "@/types/documents";
 
 // Default cosine similarity threshold for all-MiniLM-L6-v2 (normalized embeddings)
-export const DEFAULT_SIMILARITY_THRESHOLD = 0.3;
+export const DEFAULT_SIMILARITY_THRESHOLD = 0.2;
 export const MIN_SEMANTIC_QUERY_LENGTH = 3;
 
 export interface SemanticSearchOptions {
@@ -121,6 +121,25 @@ export async function semanticSearch(
       total_count: number;
     }
   >;
+
+  // If vector search returns 0 matches, automatically fallback to keyword search
+  // so the user receives keyword matches rather than an empty result set
+  if (results.length === 0) {
+    const fallback = await keywordSearch({
+      q: cleanQuery,
+      subject: options.subject,
+      page,
+      limit,
+      sort: "created_at",
+      order: "desc",
+    });
+
+    return {
+      ...fallback,
+      searchType: "keyword_fallback",
+      fallbackReason: "No strong semantic matches found. Showing keyword results.",
+    };
+  }
 
   const total = results[0]?.total_count ?? 0;
 

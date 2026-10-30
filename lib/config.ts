@@ -4,6 +4,11 @@
 function requireEnv(key: string): string {
   const value = process.env[key];
   if (!value) {
+    // During Next.js build time (static page / route data collection), return
+    // a placeholder so compilation succeeds without baking secrets into image layers.
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      return `build-placeholder-${key.toLowerCase().replace(/_/g, "-")}`;
+    }
     throw new Error(
       `Missing required environment variable: ${key}. Check your .env.local file.`
     );
@@ -17,8 +22,8 @@ function optionalEnv(key: string, fallback: string): string {
 
 export const config = {
   supabase: {
-    url: requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    anonKey: requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    url: optionalEnv("SUPABASE_URL", "") || requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    anonKey: optionalEnv("SUPABASE_ANON_KEY", "") || requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
     serviceRoleKey: requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
     storageBucket: optionalEnv("SUPABASE_STORAGE_BUCKET", "univault-documents"),
   },

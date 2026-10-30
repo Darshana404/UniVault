@@ -10,10 +10,21 @@ function sanitize(val?: string): string {
     .replace(/\/rest\/v1\/?$/i, "");
 }
 
+function getRuntimeEnv(key: string): string | undefined {
+  // Using dynamic bracket access prevents Turbopack/Next.js from inlining
+  // build-time placeholder strings into server-side code bundles.
+  return process.env[key];
+}
+
 // Service-role client: bypasses RLS — use only for trusted server operations
 export function createServiceClient() {
-  const url = sanitize(process.env.NEXT_PUBLIC_SUPABASE_URL);
-  const key = sanitize(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const url = sanitize(
+    getRuntimeEnv("SUPABASE_URL") ||
+    getRuntimeEnv("NEXT_PUBLIC_SUPABASE_URL")
+  );
+  const key = sanitize(
+    getRuntimeEnv("SUPABASE_SERVICE_ROLE_KEY")
+  );
 
   if (!url || !key) {
     throw new Error(
@@ -32,8 +43,14 @@ export function createServiceClient() {
 
 // Anon client for server-side operations that should respect RLS
 export function createAnonServerClient() {
-  const url = sanitize(process.env.NEXT_PUBLIC_SUPABASE_URL);
-  const key = sanitize(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const url = sanitize(
+    getRuntimeEnv("SUPABASE_URL") ||
+    getRuntimeEnv("NEXT_PUBLIC_SUPABASE_URL")
+  );
+  const key = sanitize(
+    getRuntimeEnv("SUPABASE_ANON_KEY") ||
+    getRuntimeEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+  );
 
   if (!url || !key) {
     throw new Error(

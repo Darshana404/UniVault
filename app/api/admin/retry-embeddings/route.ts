@@ -14,8 +14,16 @@ import { retryFailedEmbeddings } from "@/lib/search/embedding-service";
 
 export async function POST(_request: NextRequest) {
   try {
-    // Require authentication (extend to admin check in production)
-    await requireAuth();
+    // Allow either active authenticated user session or service-role bearer token
+    const authHeader = _request.headers.get("authorization");
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const isServiceRole = Boolean(
+      serviceKey && authHeader === `Bearer ${serviceKey}`
+    );
+
+    if (!isServiceRole) {
+      await requireAuth();
+    }
 
     const result = await retryFailedEmbeddings();
 

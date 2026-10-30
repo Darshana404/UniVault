@@ -1,11 +1,10 @@
-name: CI
+name: CI/CD & Security Pipeline
 
 on:
   pull_request:
   push:
     branches: [main]
 
-# Cancel an older run on the same branch when a new commit is pushed
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -20,7 +19,6 @@ jobs:
     timeout-minutes: 15
 
     env:
-      # Dummy values only. Real secrets live in your host, never here.
       NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
       SUPABASE_SERVICE_ROLE_KEY: placeholder
@@ -37,7 +35,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
-          
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -76,5 +74,102 @@ jobs:
       - name: Unit tests
         run: npx vitest run --passWithNoTests
 
-      - name: Build
+      - name: Next.js Standalone Build
         run: npm run build
+
+  docker-owasp-scan:
+    name: Docker Build & OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    needs: ci
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and tag Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: |
+            univault:latest
+            univault:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
+            NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+      - name: Start containerized application
+        run: |
+          docker run -d --name univault-app -p 3000:3000 \
+            -e NODE_ENV=production \
+            -e PORT=3000 \
+            -e HOSTNAME=0.0.0.0 \
+            -e NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co \
+            -e NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder \
+            -e NEXT_PUBLIC_APP_URL=http://localhost:3000 \
+            -e SESSION_SECRET=ci-placeholder-secret-at-least-32-characters \
+            -e ALLOWED_EMAIL_DOMAINS=university.edu \
+            -e SMTP_HOST=localhost \
+            -e SMTP_USER=ci \
+            -e SMTP_PASS=ci \
+            -e SMTP_FROM="UniVault <ci@example.com>" \
+            univault:latest
+
+      - name: Wait for application health check
+        run: |
+          echo "Waiting for http://localhost:3000/api/health to be ready..."
+          timeout 60 bash -c 'until curl -sf http://localhost:3000/api/health | grep -q "ok"; do sleep 2; done'
+          echo "UniVault application is healthy!"
+
+      - name: OWASP ZAP Baseline Scan (Fails on High Severity)
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-I -m 5'
+          fail_action: true
+          allow_issue_writing: false
+
+      - name: Stop and cleanup container
+        if: always()
+        run: docker rm -f univault-app || true
+
+  deploy:
+    name: Zero-Downtime Rollout Deploy
+    runs-on: ubuntu-latest
+    needs: [ci, docker-owasp-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trigger Zero-Downtime Deployment
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          echo "Initiating zero-downtime deployment rollout..."
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Deploying to Render via zero-downtime rolling deploy hook..."
+            curl -fsS -X POST "$RENDER_DEPLOY_HOOK"
+            echo "Render rolling deployment triggered successfully!"
+          elif [ -n "$RAILWAY_TOKEN" ]; then
+            echo "Deploying to Railway..."
+            npm install -g @railway/cli
+            railway up --detach
+            echo "Railway deployment initiated!"
+          else
+            echo "No explicit deploy secret set (RENDER_DEPLOY_HOOK or RAILWAY_TOKEN)."
+            echo "Auto-deploy via Git integration is active with render.yaml / railway.json."
+          fi

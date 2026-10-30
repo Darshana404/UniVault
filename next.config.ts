@@ -50,6 +50,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   // Configure Turbopack root directory
   turbopack: { root: "." },
 
@@ -67,15 +68,6 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
     ];
-  },
-
-  // Prevents accidental exposure of server-only env vars
-  // List only what the browser legitimately needs
-  env: {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY:
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "",
   },
 
   // Recommended for production stability

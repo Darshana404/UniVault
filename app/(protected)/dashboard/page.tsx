@@ -107,7 +107,7 @@ export default function DashboardPage() {
           <span className="section-header__label section-label">
             Academic Categories
           </span>
-          <Link href="/documents" className="section-header__link">
+          <Link href="/categories" className="section-header__link">
             <span>View all</span>
             <svg
               width="12"

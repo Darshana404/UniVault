@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "@/styles/pages/pdf-detail.css";
@@ -8,6 +8,7 @@ import { useDocument, useDeleteDocument } from "@/hooks/useDocuments";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatFileSize, formatDate } from "@/lib/utils/format";
+import { isFavourited, addFavourite, removeFavourite } from "@/lib/favourites";
 
 export default function DocumentDetailPage({
   params,
@@ -20,6 +21,27 @@ export default function DocumentDetailPage({
   const { data: document, isLoading, error } = useDocument(id);
   const deleteDocument = useDeleteDocument();
   const [isFavourite, setIsFavourite] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      isFavourited(id).then(setIsFavourite).catch(console.error);
+    }
+  }, [id]);
+
+  async function handleToggleFavourite() {
+    const nextState = !isFavourite;
+    setIsFavourite(nextState);
+    try {
+      if (nextState) {
+        await addFavourite(id);
+      } else {
+        await removeFavourite(id);
+      }
+    } catch (err) {
+      setIsFavourite(!nextState);
+      console.error(err);
+    }
+  }
 
   async function handleDownload() {
     const res = await fetch(`/api/documents/${id}/download`);
@@ -256,7 +278,7 @@ export default function DocumentDetailPage({
         {/* Icon button (favourite): 44px square, background --color-surface, border --border, icon --color-text-secondary */}
         <button
           type="button"
-          onClick={() => setIsFavourite((v) => !v)}
+          onClick={handleToggleFavourite}
           className="btn btn--icon"
           aria-label="Toggle favourite"
         >

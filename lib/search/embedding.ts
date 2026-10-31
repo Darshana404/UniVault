@@ -164,12 +164,13 @@ export function getEmbeddingProvider(): EmbeddingProvider {
     case "local":
       return new LocalEmbeddingProvider();
     case "openai":
+      // If openai is selected but no API key is provided, gracefully fallback to local vendored model
+      if (!config.embedding.apiKey) {
+        return new LocalEmbeddingProvider();
+      }
       return new OpenAIEmbeddingProvider();
     default:
-      throw new Error(
-        `Unknown embedding provider: "${provider}". ` +
-          `Set EMBEDDING_PROVIDER=local or EMBEDDING_PROVIDER=openai in .env.local.`
-      );
+      return new LocalEmbeddingProvider();
   }
 }
 

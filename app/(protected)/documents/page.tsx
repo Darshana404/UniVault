@@ -69,7 +69,7 @@ function DocumentsContent() {
       setPaginationAndSort((prev) => ({ ...prev, page: 1 }));
       router.replace(qs ? `/documents?${qs}` : "/documents", { scroll: false });
     },
-    [router]
+    [router, setPaginationAndSort]
   );
 
   const handleSearch = useCallback(
@@ -94,13 +94,16 @@ function DocumentsContent() {
       ];
       setPaginationAndSort((prev) => ({ ...prev, sort, order, page: 1 }));
     },
-    []
+    [setPaginationAndSort]
   );
 
-  const handlePageChange = useCallback((page: number) => {
-    setPaginationAndSort((prev) => ({ ...prev, page }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setPaginationAndSort((prev) => ({ ...prev, page }));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [setPaginationAndSort]
+  );
 
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this document?")) return;

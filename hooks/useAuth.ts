@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import type { User } from "@/types/auth";
 
 // Query key constants
@@ -42,8 +41,11 @@ async function verifyOTP(email: string, otp: string) {
 
 // Logout
 async function logout() {
-  const res = await fetch("/api/auth/logout", { method: "POST" });
-  if (!res.ok) throw new Error("Logout failed.");
+  try {
+    await fetch("/api/auth/logout", { method: "POST" });
+  } catch {
+    // ignore network failure so UI can still redirect and clear state
+  }
 }
 
 // Hooks
@@ -78,13 +80,13 @@ export function useVerifyOTP() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.clear();
-      router.push("/login");
+      // Hard redirect to /login?logout=true ensuring cookies are cleared and page state completely resets
+      window.location.href = "/login?logout=true";
     },
   });
 }

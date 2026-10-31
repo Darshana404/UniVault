@@ -161,28 +161,39 @@ export async function POST(request: NextRequest) {
     const supabase = createServiceClient();
 
     if (validationResult.status === "REJECTED") {
-      // Store rejected document record for audit trail
-      await supabase.from("documents").insert({
-        title: metadata.title,
-        description: metadata.description ?? null,
-        subject: metadata.subject,
-        original_filename: file.name,
-        storage_path: `rejected/${auth.user.id}/${validationResult.contentHash}`,
-        file_size: buffer.length,
-        content_type: "application/pdf",
-        content_hash: validationResult.contentHash,
-        uploader_id: auth.user.id,
-        validation_status: "REJECTED",
-        validation_failure_reason: validationResult.failureReason,
-        validated_at: new Date().toISOString(),
-      }).maybeSingle(); // Don't fail if duplicate hash
-
+      // Do NOT store failed/rejected documents in Supabase
+      // Allows users to re-upload the file without unique constraint or duplicate errors
       return errorResponse(
         validationResult.failureReason ??
           "Document failed validation checks.",
         400
       );
     }
+
+    // Check for duplicate approved document from this uploader BEFORE uploading to storage
+    const { data: existing } = await supabase
+      .from("documents")
+      .select("id")
+      .eq("content_hash", validationResult.contentHash)
+      .eq("uploader_id", auth.user.id)
+      .eq("validation_status", "APPROVED")
+      .maybeSingle();
+
+    if (existing) {
+      return errorResponse(
+        "You have already uploaded this document.",
+        409
+      );
+    }
+
+    // Clean up any historical rejected records with this content hash so
+    // database unique constraints on content_hash don't block the approved upload
+    await supabase
+      .from("documents")
+      .delete()
+      .eq("content_hash", validationResult.contentHash)
+      .eq("uploader_id", auth.user.id)
+      .eq("validation_status", "REJECTED");
 
     // Upload approved PDF to storage
     const uploadResult = await uploadPDFToStorage(
@@ -193,24 +204,6 @@ export async function POST(request: NextRequest) {
     );
 
     storagePath = uploadResult.storagePath;
-
-    // Check for duplicate content hash from this uploader
-    const { data: existing } = await supabase
-      .from("documents")
-      .select("id")
-      .eq("content_hash", validationResult.contentHash)
-      .eq("uploader_id", auth.user.id)
-      .eq("validation_status", "APPROVED")
-      .maybeSingle();
-
-    if (existing) {
-      // Clean up the uploaded file since it's a duplicate
-      await deletePDFFromStorage(storagePath);
-      return errorResponse(
-        "You have already uploaded this document.",
-        409
-      );
-    }
 
     // Save approved document metadata to database
     const { data: document, error: insertError } = await supabase
@@ -240,18 +233,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Trigger embedding generation
-    // Non-blocking: document is approved even if this fails
-    // generateAndStoreEmbedding handles its own error logging
-    generateAndStoreEmbedding({
-      documentId: document.id,
-      title: metadata.title,
-      subject: metadata.subject,
-      description: metadata.description,
-      extractedText: validationResult.extractedText,
-    }).catch((err) =>
-      console.error("[Upload] Embedding generation error:", err)
-    );
+    // Await embedding generation so newer files are immediately indexed and searchable
+    // generateAndStoreEmbedding never throws; it tracks errors safely internally
+    try {
+      await generateAndStoreEmbedding({
+        documentId: document.id,
+        title: metadata.title,
+        subject: metadata.subject,
+        description: metadata.description,
+        extractedText: validationResult.extractedText,
+      });
+    } catch (embErr) {
+      console.error("[Upload] Embedding generation error:", embErr);
+    }
 
     return successResponse(
       {

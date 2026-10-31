@@ -1,16 +1,48 @@
 import { NextRequest } from "next/server";
-import { successResponse, safeErrorResponse } from "@/lib/api/response";
-import { requireAuth } from "@/lib/middleware/auth-guard";
+import { cookies } from "next/headers";
+import { successResponse } from "@/lib/api/response";
 import { invalidateSession } from "@/lib/auth/session";
+
+const SESSION_COOKIE_NAME = "univault_session";
 
 export async function POST(_request: NextRequest) {
   try {
-    const auth = await requireAuth();
-    await invalidateSession(auth.sessionId);
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+    if (sessionId) {
+      await invalidateSession(sessionId);
+    } else {
+      // Clear cookie if present or stale
+      cookieStore.set({
+        name: SESSION_COOKIE_NAME,
+        value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      });
+    }
+
     return successResponse({ message: "Logged out successfully." });
   } catch {
-    // Even if session validation fails, clear the cookie
-    // by calling invalidateSession with an empty string guard
-    return safeErrorResponse(null, "Logout failed.", 500);
+    // In any error case, ensure the cookie is cleared
+    try {
+      const cookieStore = await cookies();
+      cookieStore.set({
+        name: SESSION_COOKIE_NAME,
+        value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      });
+    } catch {
+      // ignore
+    }
+
+    return successResponse({ message: "Logged out successfully." });
   }
 }

@@ -145,7 +145,7 @@ export async function retryFailedEmbeddings(): Promise<{
       )
       `
     )
-    .eq("embedding_status", "FAILED")
+    .in("embedding_status", ["FAILED", "PENDING"])
     .limit(50);
 
   if (!failed || failed.length === 0) {

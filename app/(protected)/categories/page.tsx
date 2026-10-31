@@ -6,7 +6,7 @@ import { VALID_SUBJECTS } from "@/lib/pdf/taxonomy";
 export default function ProtectedCategoriesPage() {
   return (
     <div className="categories-page">
-      <Link href="/home" className="pdf-detail__back">
+      <Link href="/dashboard" className="pdf-detail__back">
         <svg
           width="16"
           height="16"
@@ -30,7 +30,7 @@ export default function ProtectedCategoriesPage() {
         {VALID_SUBJECTS.map((subject) => (
           <Link
             key={subject}
-            href={`/library?subject=${encodeURIComponent(subject)}`}
+            href={`/documents?subject=${encodeURIComponent(subject)}`}
             className="category-card card--category"
           >
             <div className="card--category__icon">

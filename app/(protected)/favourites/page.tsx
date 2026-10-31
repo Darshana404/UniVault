@@ -20,7 +20,7 @@ export default function ProtectedFavouritesPage() {
 
   return (
     <div className="favourites-page">
-      <Link href="/home" className="pdf-detail__back">
+      <Link href="/dashboard" className="pdf-detail__back">
         <svg
           width="16"
           height="16"

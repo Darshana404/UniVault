@@ -1,23 +1,20 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { use, useEffect } from "react";
-import { useRouter } from "next/navigation";
-
-export default function LibraryRedirect({
+export default async function LibraryRedirect({
   searchParams,
 }: {
-  searchParams?: Promise<{ subject?: string }>;
+  searchParams?: Promise<{ subject?: string; q?: string }>;
 }) {
-  const router = useRouter();
-  const params = searchParams ? use(searchParams) : undefined;
+  const params = searchParams ? await searchParams : undefined;
+  const query = new URLSearchParams();
 
-  useEffect(() => {
-    if (params?.subject) {
-      router.replace(`/documents?subject=${encodeURIComponent(params.subject)}`);
-    } else {
-      router.replace("/documents");
-    }
-  }, [params, router]);
+  if (params?.subject) {
+    query.set("subject", params.subject);
+  }
+  if (params?.q) {
+    query.set("q", params.q);
+  }
 
-  return null;
+  const qs = query.toString();
+  redirect(qs ? `/documents?${qs}` : "/documents");
 }

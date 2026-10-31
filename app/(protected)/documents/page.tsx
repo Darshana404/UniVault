@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
   useDocuments,
@@ -11,22 +12,41 @@ import {
 import { DocumentList } from "@/components/documents/DocumentList";
 import { DocumentSearch } from "@/components/documents/DocumentSearch";
 import { Pagination } from "@/components/documents/Pagination";
+import { Spinner } from "@/components/ui/Spinner";
 import type { DocumentSearchParams } from "@/types/api";
 
-export default function DocumentsPage() {
+function DocumentsContent() {
   const { data: user } = useCurrentUser();
   const deleteDocument = useDeleteDocument();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [useSemanticMode, setUseSemanticMode] = useState(false);
 
-  const [params, setParams] = useState<DocumentSearchParams>({
-    q: "",
-    subject: "",
+  const urlSubject = searchParams.get("subject") ?? "";
+  const urlQ = searchParams.get("q") ?? "";
+
+  const [paginationAndSort, setPaginationAndSort] = useState<{
+    sort: "created_at" | "title";
+    order: "asc" | "desc";
+    page: number;
+    limit: number;
+  }>({
     sort: "created_at",
     order: "desc",
     page: 1,
     limit: 20,
   });
+
+  const params: DocumentSearchParams = {
+    q: urlQ,
+    subject: urlSubject,
+    sort: paginationAndSort.sort,
+    order: paginationAndSort.order,
+    page: paginationAndSort.page,
+    limit: paginationAndSort.limit,
+  };
 
   const queryText = params.q?.trim() ?? "";
   const isSemanticActive = useSemanticMode && queryText.length >= 3;
@@ -40,13 +60,31 @@ export default function DocumentsPage() {
   const { data, isLoading, error } = activeResult;
   const { data: subjects } = useSubjects();
 
-  const handleSearch = useCallback((q: string) => {
-    setParams((prev) => ({ ...prev, q, page: 1 }));
-  }, []);
+  const updateSearchAndSubject = useCallback(
+    (newQ: string, newSubject: string) => {
+      const sp = new URLSearchParams();
+      if (newQ) sp.set("q", newQ);
+      if (newSubject) sp.set("subject", newSubject);
+      const qs = sp.toString();
+      setPaginationAndSort((prev) => ({ ...prev, page: 1 }));
+      router.replace(qs ? `/documents?${qs}` : "/documents", { scroll: false });
+    },
+    [router]
+  );
 
-  const handleSubject = useCallback((subject: string) => {
-    setParams((prev) => ({ ...prev, subject, page: 1 }));
-  }, []);
+  const handleSearch = useCallback(
+    (q: string) => {
+      updateSearchAndSubject(q, urlSubject);
+    },
+    [updateSearchAndSubject, urlSubject]
+  );
+
+  const handleSubject = useCallback(
+    (subject: string) => {
+      updateSearchAndSubject(urlQ, subject);
+    },
+    [updateSearchAndSubject, urlQ]
+  );
 
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -54,13 +92,13 @@ export default function DocumentsPage() {
         "created_at" | "title",
         "asc" | "desc"
       ];
-      setParams((prev) => ({ ...prev, sort, order, page: 1 }));
+      setPaginationAndSort((prev) => ({ ...prev, sort, order, page: 1 }));
     },
     []
   );
 
   const handlePageChange = useCallback((page: number) => {
-    setParams((prev) => ({ ...prev, page }));
+    setPaginationAndSort((prev) => ({ ...prev, page }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -88,9 +126,25 @@ export default function DocumentsPage() {
     <div className="flex flex-col gap-4">
       {/* Page header */}
       <div>
-        <h1 className="page-title">Document Library</h1>
+        <h1 className="page-title">
+          {params.subject ? `${params.subject} Documents` : "Document Library"}
+        </h1>
         <p className="pdf-meta mt-1">
-          Browse and search academic resources shared by your peers.
+          {params.subject ? (
+            <span>
+              Showing academic resources categorized under{" "}
+              <strong className="text-white">{params.subject}</strong>.{" "}
+              <button
+                type="button"
+                onClick={() => handleSubject("")}
+                className="underline text-teal-400 hover:text-teal-300 ml-1 cursor-pointer"
+              >
+                Clear filter
+              </button>
+            </span>
+          ) : (
+            "Browse and search academic resources shared by your peers."
+          )}
         </p>
       </div>
 
@@ -202,5 +256,19 @@ export default function DocumentsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function DocumentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="home__empty">
+          <Spinner size="md" />
+        </div>
+      }
+    >
+      <DocumentsContent />
+    </Suspense>
   );
 }

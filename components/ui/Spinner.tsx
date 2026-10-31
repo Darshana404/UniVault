@@ -3,25 +3,42 @@ interface SpinnerProps {
   className?: string;
 }
 
+const pixelSizes = {
+  sm: 16,
+  md: 28,
+  lg: 36,
+};
+
 export function Spinner({ size = "md", className = "" }: SpinnerProps) {
-  const sizes = { sm: "h-4 w-4", md: "h-8 w-8", lg: "h-12 w-12" };
+  const px = pixelSizes[size] ?? 28;
 
   return (
     <svg
-      className={`animate-spin text-teal-400 ${sizes[size]} ${className}`}
+      width={px}
+      height={px}
+      style={{
+        width: `${px}px`,
+        height: `${px}px`,
+        maxWidth: `${px}px`,
+        maxHeight: `${px}px`,
+        display: "inline-block",
+      }}
+      className={`spinner animate-spin ${className}`.trim()}
       fill="none"
       viewBox="0 0 24 24"
+      aria-label="Loading"
+      role="status"
     >
       <circle
-        className="opacity-25"
+        style={{ opacity: 0.25 }}
         cx="12"
         cy="12"
         r="10"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="3.5"
       />
       <path
-        className="opacity-75"
+        style={{ opacity: 0.85 }}
         fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
       />

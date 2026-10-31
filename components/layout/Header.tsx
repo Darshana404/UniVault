@@ -52,6 +52,7 @@ export function Header() {
             <svg
               width="14"
               height="14"
+              style={{ width: "14px", height: "14px", flexShrink: 0 }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

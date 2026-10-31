@@ -53,4 +53,5 @@ OpenAI when `EMBEDDING_API_KEY` or `OPENAI_API_KEY` is present. Without an API
 key, it uses the vendored local model as a fallback. Keep the provider and
 embedding dimensions consistent with the vectors already stored in Supabase;
 changing providers requires re-generating document embeddings and a compatible
-pgvector column.
+pgvector column. If a serverless deployment cannot preserve the bundled model
+binary, the same model is loaded from its public Hugging Face repository.

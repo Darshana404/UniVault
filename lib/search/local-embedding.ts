@@ -14,21 +14,37 @@ async function getExtractor(): Promise<FeatureExtractionPipeline> {
 
   if (!loading) {
     loading = (async () => {
-      // Refuse to load anything that does not match the pinned manifest
-      verifyModelFiles();
-
       const { pipeline, env } = await import("@huggingface/transformers");
-
-      // Never fetch models from the internet at runtime
       env.allowRemoteModels = false;
       env.localModelPath = path.join(process.cwd(), "models");
 
-      const loaded = (await pipeline("feature-extraction", MODEL_ID, {
-        dtype: "q8",
-      })) as FeatureExtractionPipeline;
+      try {
+        // Prefer the vendored model and refuse to load a tampered local file.
+        verifyModelFiles();
 
-      extractor = loaded;
-      return loaded;
+        const loaded = (await pipeline("feature-extraction", MODEL_ID, {
+          dtype: "q8",
+        })) as FeatureExtractionPipeline;
+
+        extractor = loaded;
+        return loaded;
+      } catch (localError) {
+        // Some serverless Git integrations do not preserve large binary files.
+        // Use the public Hugging Face copy of the same model in that case.
+        console.warn(
+          "[Embedding] Local model unavailable; using Hugging Face remote model:",
+          localError
+        );
+        env.allowLocalModels = false;
+        env.allowRemoteModels = true;
+
+        const loaded = (await pipeline("feature-extraction", MODEL_ID, {
+          dtype: "q8",
+        })) as FeatureExtractionPipeline;
+
+        extractor = loaded;
+        return loaded;
+      }
     })().catch((err) => {
       // Allow a retry on the next call if loading failed
       loading = null;

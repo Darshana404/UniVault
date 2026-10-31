@@ -70,7 +70,7 @@ export default function VerifyPage() {
         await verifyAsync({ email, otp: value });
         sessionStorage.removeItem(EMAIL_KEY);
         setSuccess(true);
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       } catch (err) {
         const msg = err instanceof Error ? err.message : "";
         if (/too many/i.test(msg)) {

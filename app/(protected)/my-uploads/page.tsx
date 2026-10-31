@@ -20,7 +20,7 @@ export default function ProtectedMyUploadsPage() {
 
   return (
     <div className="my-uploads-page">
-      <Link href="/home" className="pdf-detail__back">
+      <Link href="/dashboard" className="pdf-detail__back">
         <svg
           width="16"
           height="16"

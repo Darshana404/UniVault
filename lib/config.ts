@@ -20,6 +20,16 @@ function optionalEnv(key: string, fallback: string): string {
   return process.env[key] ?? fallback;
 }
 
+const embeddingApiKey = process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || "";
+const embeddingProvider = optionalEnv(
+  "EMBEDDING_PROVIDER",
+  embeddingApiKey ? "openai" : "local"
+);
+const embeddingModel = optionalEnv(
+  "EMBEDDING_MODEL",
+  embeddingProvider === "openai" ? "text-embedding-3-small" : "all-MiniLM-L6-v2"
+);
+
 export const config = {
   supabase: {
     url: optionalEnv("SUPABASE_URL", "") || requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
@@ -50,10 +60,13 @@ export const config = {
     from: requireEnv("SMTP_FROM"),
   },
   embedding: {
-    provider: optionalEnv("EMBEDDING_PROVIDER", "local"),
-    apiKey: process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || "",
-    model: optionalEnv("EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
-    dimensions: parseInt(optionalEnv("EMBEDDING_DIMENSIONS", "384"), 10),
+    provider: embeddingProvider,
+    apiKey: embeddingApiKey,
+    model: embeddingModel,
+    dimensions: parseInt(
+      optionalEnv("EMBEDDING_DIMENSIONS", embeddingProvider === "openai" ? "1536" : "384"),
+      10
+    ),
   },
   app: {
     url: optionalEnv("NEXT_PUBLIC_APP_URL", "http://localhost:3000"),

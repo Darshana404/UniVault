@@ -17,6 +17,8 @@ import { uploadLimiter } from "@/lib/middleware/rate-limit";
 import { VALID_SUBJECTS } from "@/lib/pdf/taxonomy";
 import { z } from "zod";
 
+export const runtime = "nodejs";
+
 // Maximum file size enforced at the API layer (50 MB)
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 

@@ -60,6 +60,13 @@ const nextConfig: NextConfig = {
     "sharp",
   ],
 
+  // The local embedding model is loaded through fs at runtime, so it is not
+  // discoverable by Next.js file tracing on serverless deployments.
+  outputFileTracingIncludes: {
+    "/api/documents": ["./models/**/*"],
+    "/api/admin/retry-embeddings": ["./models/**/*"],
+  },
+
   // Apply security headers to all routes
   async headers() {
     return [

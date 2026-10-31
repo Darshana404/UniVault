@@ -8,7 +8,7 @@ import { keywordSearch } from "./keyword";
 import type { DocumentListItem } from "@/types/documents";
 
 // Default cosine similarity threshold for all-MiniLM-L6-v2 (normalized embeddings)
-export const DEFAULT_SIMILARITY_THRESHOLD = 0.2;
+export const DEFAULT_SIMILARITY_THRESHOLD = 0.25;
 export const MIN_SEMANTIC_QUERY_LENGTH = 3;
 
 export interface SemanticSearchOptions {

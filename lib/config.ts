@@ -50,10 +50,10 @@ export const config = {
     from: requireEnv("SMTP_FROM"),
   },
   embedding: {
-    provider: optionalEnv("EMBEDDING_PROVIDER", "openai"),
+    provider: optionalEnv("EMBEDDING_PROVIDER", "local"),
     apiKey: process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || "",
-    model: optionalEnv("EMBEDDING_MODEL", "text-embedding-3-small"),
-    dimensions: parseInt(optionalEnv("EMBEDDING_DIMENSIONS", "1536"), 10),
+    model: optionalEnv("EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+    dimensions: parseInt(optionalEnv("EMBEDDING_DIMENSIONS", "384"), 10),
   },
   app: {
     url: optionalEnv("NEXT_PUBLIC_APP_URL", "http://localhost:3000"),

@@ -20,15 +20,11 @@ function optionalEnv(key: string, fallback: string): string {
   return process.env[key] ?? fallback;
 }
 
-const embeddingApiKey =
-  process.env.GEMINI_API_KEY ||
-  process.env.GOOGLE_API_KEY ||
-  process.env.EMBEDDING_API_KEY ||
-  process.env.HF_API_KEY ||
-  process.env.HUGGINGFACE_API_KEY ||
-  process.env.OPENAI_API_KEY ||
-  "";
+const genericApiKey = process.env.EMBEDDING_API_KEY || "";
 
+// 1. Resolve provider first
+// Explicit EMBEDDING_PROVIDER takes precedence; otherwise infer from specific keys,
+// preserving the legacy OpenAI fallback for generic EMBEDDING_API_KEY.
 const embeddingProvider = optionalEnv(
   "EMBEDDING_PROVIDER",
   process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
@@ -37,14 +33,36 @@ const embeddingProvider = optionalEnv(
     ? "huggingface"
     : process.env.OPENAI_API_KEY
     ? "openai"
-    : embeddingApiKey
-    ? "gemini"
+    : genericApiKey
+    ? "openai"
     : "local"
 );
 
+// 2. Select credential corresponding to the resolved provider
+const embeddingApiKey = (() => {
+  switch (embeddingProvider) {
+    case "gemini":
+      return (
+        process.env.GEMINI_API_KEY ||
+        process.env.GOOGLE_API_KEY ||
+        genericApiKey
+      );
+    case "huggingface":
+      return (
+        process.env.HF_API_KEY ||
+        process.env.HUGGINGFACE_API_KEY ||
+        genericApiKey
+      );
+    case "openai":
+      return process.env.OPENAI_API_KEY || genericApiKey;
+    default:
+      return genericApiKey;
+  }
+})();
+
 const defaultModel =
   embeddingProvider === "gemini"
-    ? "text-embedding-004"
+    ? "gemini-embedding-001"
     : embeddingProvider === "openai"
     ? "text-embedding-3-small"
     : embeddingProvider === "huggingface"

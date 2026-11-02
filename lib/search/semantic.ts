@@ -7,8 +7,8 @@ import { generateEmbeddingSafe, prepareTextForEmbedding } from "./embedding";
 import { keywordSearch } from "./keyword";
 import type { DocumentListItem } from "@/types/documents";
 
-// Default cosine similarity threshold for all-MiniLM-L6-v2 (normalized embeddings)
-export const DEFAULT_SIMILARITY_THRESHOLD = 0.25;
+// Default cosine similarity threshold for gemini-embedding-001 with L2 normalization
+export const DEFAULT_SIMILARITY_THRESHOLD = 0.55;
 export const MIN_SEMANTIC_QUERY_LENGTH = 3;
 
 export interface SemanticSearchOptions {

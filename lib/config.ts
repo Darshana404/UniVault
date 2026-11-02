@@ -62,7 +62,7 @@ const embeddingApiKey = (() => {
 
 const defaultModel =
   embeddingProvider === "gemini"
-    ? "text-embedding-004"
+    ? "gemini-embedding-001"
     : embeddingProvider === "openai"
     ? "text-embedding-3-small"
     : embeddingProvider === "huggingface"

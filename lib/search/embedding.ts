@@ -156,6 +156,18 @@ class OpenAIEmbeddingProvider implements EmbeddingProvider {
   }
 }
 
+// L2-normalize vector so cosine similarity equals dot product,
+// required when truncating Gemini embeddings to smaller dimensions (e.g. 384)
+function l2Normalize(vector: number[]): number[] {
+  let sumSq = 0;
+  for (let i = 0; i < vector.length; i++) {
+    sumSq += vector[i] * vector[i];
+  }
+  const norm = Math.sqrt(sumSq);
+  if (norm === 0) return vector;
+  return vector.map((v) => v / norm);
+}
+
 // Google Gemini embedding provider (free tier via Google AI Studio)
 class GeminiEmbeddingProvider implements EmbeddingProvider {
   private model: string;
@@ -207,11 +219,13 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
       embedding?: { values: number[] };
     };
 
-    const embedding = data.embedding?.values;
+    const rawEmbedding = data.embedding?.values;
 
-    if (!embedding || embedding.length === 0) {
+    if (!rawEmbedding || rawEmbedding.length === 0) {
       throw new Error("Gemini API returned empty embedding.");
     }
+
+    const embedding = l2Normalize(rawEmbedding);
 
     return {
       embedding,
@@ -286,10 +300,11 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
       }
 
       for (const item of embeddings) {
+        const normalized = l2Normalize(item.values);
         results.push({
-          embedding: item.values,
+          embedding: normalized,
           model: this.model,
-          dimensions: item.values.length,
+          dimensions: normalized.length,
         });
       }
     }

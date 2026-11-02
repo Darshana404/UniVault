@@ -160,8 +160,8 @@ class OpenAIEmbeddingProvider implements EmbeddingProvider {
 // required when truncating Gemini embeddings to smaller dimensions (e.g. 384)
 function l2Normalize(vector: number[]): number[] {
   let sumSq = 0;
-  for (let i = 0; i < vector.length; i++) {
-    sumSq += vector[i] * vector[i];
+  for (const value of vector) {
+    sumSq += value * value;
   }
   const norm = Math.sqrt(sumSq);
   if (norm === 0) return vector;

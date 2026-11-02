@@ -37,9 +37,19 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ### Semantic search on Vercel
 
-Configure an embedding provider in the Vercel project settings. OpenAI is
-recommended because it avoids loading the local ONNX model on each new
-serverless instance:
+Configure an embedding provider in the Vercel project settings.
+
+#### Option A: Hugging Face (Free — uses the same 384-dim all-MiniLM-L6-v2 model)
+
+This requires no schema changes or re-indexing if you already use 384-dimension vectors:
+
+```text
+HF_API_KEY=<your free Hugging Face User Access Token>
+```
+
+*(Optionally you can explicitly set `EMBEDDING_PROVIDER=huggingface` and `EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2`).*
+
+#### Option B: OpenAI (Paid)
 
 ```text
 EMBEDDING_PROVIDER=openai
@@ -48,10 +58,4 @@ EMBEDDING_MODEL=text-embedding-3-small
 EMBEDDING_DIMENSIONS=1536
 ```
 
-If `EMBEDDING_PROVIDER` is omitted, the application automatically selects
-OpenAI when `EMBEDDING_API_KEY` or `OPENAI_API_KEY` is present. Without an API
-key, it uses the vendored local model as a fallback. Keep the provider and
-embedding dimensions consistent with the vectors already stored in Supabase;
-changing providers requires re-generating document embeddings and a compatible
-pgvector column. If a serverless deployment cannot preserve the bundled model
-binary, the same model is loaded from its public Hugging Face repository.
+Keep the provider and embedding dimensions consistent with the vectors already stored in Supabase; changing providers with different dimensions requires re-generating document embeddings and updating the pgvector column.

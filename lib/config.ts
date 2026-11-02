@@ -20,15 +20,30 @@ function optionalEnv(key: string, fallback: string): string {
   return process.env[key] ?? fallback;
 }
 
-const embeddingApiKey = process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || "";
+const embeddingApiKey =
+  process.env.EMBEDDING_API_KEY ||
+  process.env.HF_API_KEY ||
+  process.env.HUGGINGFACE_API_KEY ||
+  process.env.OPENAI_API_KEY ||
+  "";
 const embeddingProvider = optionalEnv(
   "EMBEDDING_PROVIDER",
-  embeddingApiKey ? "openai" : "local"
+  process.env.HF_API_KEY || process.env.HUGGINGFACE_API_KEY
+    ? "huggingface"
+    : process.env.OPENAI_API_KEY
+    ? "openai"
+    : embeddingApiKey
+    ? "huggingface"
+    : "local"
 );
-const embeddingModel = optionalEnv(
-  "EMBEDDING_MODEL",
-  embeddingProvider === "openai" ? "text-embedding-3-small" : "all-MiniLM-L6-v2"
-);
+const defaultModel =
+  embeddingProvider === "openai"
+    ? "text-embedding-3-small"
+    : embeddingProvider === "huggingface"
+    ? "sentence-transformers/all-MiniLM-L6-v2"
+    : "all-MiniLM-L6-v2";
+
+const embeddingModel = optionalEnv("EMBEDDING_MODEL", defaultModel);
 
 export const config = {
   supabase: {

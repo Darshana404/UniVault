@@ -271,7 +271,7 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
         Array.isArray(embeddings) &&
         embeddings.length === batch.length &&
         embeddings.every(
-          (item) => Array.isArray(item.values) && item.values.length > 0
+          (item) => item != null && Array.isArray(item.values) && item.values.length > 0
         );
 
       if (!isValidBatch) {

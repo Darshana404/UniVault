@@ -162,7 +162,7 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
   private dimensions: number;
 
   constructor() {
-    this.model = config.embedding.model || "text-embedding-004";
+    this.model = process.env.EMBEDDING_MODEL || "text-embedding-004";
     this.dimensions = config.embedding.dimensions || 384;
   }
 
@@ -179,12 +179,13 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
     const prepared = prepareTextForEmbedding(text);
 
     // Call Google Generative Language API embedContent
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:embedContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:embedContent`;
 
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
         model: `models/${this.model}`,
@@ -232,12 +233,13 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
 
     for (let i = 0; i < texts.length; i += BATCH_SIZE) {
       const batch = texts.slice(i, i + BATCH_SIZE);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:batchEmbedContents?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:batchEmbedContents`;
 
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
         },
         body: JSON.stringify({
           requests: batch.map((text) => ({
@@ -263,7 +265,19 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
         embeddings?: Array<{ values: number[] }>;
       };
 
-      if (!data.embeddings || data.embeddings.length === 0) {
+      // Validate that the response count matches batch.length and every vector is non-empty
+      const embeddings = data.embeddings;
+      const isValidBatch =
+        Array.isArray(embeddings) &&
+        embeddings.length === batch.length &&
+        embeddings.every(
+          (item) => item != null && Array.isArray(item.values) && item.values.length > 0
+        );
+
+      if (!isValidBatch) {
+        console.warn(
+          "[Gemini] Batch response incomplete or invalid; falling back to sequential generation."
+        );
         const fallbackResults = await Promise.all(
           batch.map((text) => this.generateEmbedding(text))
         );
@@ -271,7 +285,7 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
         continue;
       }
 
-      for (const item of data.embeddings) {
+      for (const item of embeddings) {
         results.push({
           embedding: item.values,
           model: this.model,

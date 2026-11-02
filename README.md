@@ -47,7 +47,7 @@ Uses Google AI Studio's free tier (1,500 requests/day, 100 requests/min, no mont
 GEMINI_API_KEY=<your free Google AI Studio API key>
 ```
 
-*(By default, it uses `text-embedding-004` truncated to 384 dimensions using Matryoshka Representation Learning, matching your 384-dim Supabase database without requiring changes).*
+*(By default, it uses `gemini-embedding-001` truncated to 384 dimensions using Matryoshka Representation Learning, matching your 384-dim Supabase database without requiring changes).*
 
 #### Option B: OpenAI (Paid)
 

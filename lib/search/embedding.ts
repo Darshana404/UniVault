@@ -162,7 +162,7 @@ class GeminiEmbeddingProvider implements EmbeddingProvider {
   private dimensions: number;
 
   constructor() {
-    this.model = process.env.EMBEDDING_MODEL || "text-embedding-004";
+    this.model = config.embedding.model || "gemini-embedding-001";
     this.dimensions = config.embedding.dimensions || 384;
   }
 

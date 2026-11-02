@@ -39,15 +39,15 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Configure an embedding provider in the Vercel project settings.
 
-#### Option A: Hugging Face (Free — uses the same 384-dim all-MiniLM-L6-v2 model)
+#### Option A: Google Gemini (Recommended — 100% Free with no monthly cap)
 
-This requires no schema changes or re-indexing if you already use 384-dimension vectors:
+Uses Google AI Studio's free tier (1,500 requests/day, 100 requests/min, no monthly quota):
 
 ```text
-HF_API_KEY=<your free Hugging Face User Access Token>
+GEMINI_API_KEY=<your free Google AI Studio API key>
 ```
 
-*(Optionally you can explicitly set `EMBEDDING_PROVIDER=huggingface` and `EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2`).*
+*(By default, it uses `text-embedding-004` truncated to 384 dimensions using Matryoshka Representation Learning, matching your 384-dim Supabase database without requiring changes).*
 
 #### Option B: OpenAI (Paid)
 

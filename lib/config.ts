@@ -21,23 +21,31 @@ function optionalEnv(key: string, fallback: string): string {
 }
 
 const embeddingApiKey =
+  process.env.GEMINI_API_KEY ||
+  process.env.GOOGLE_API_KEY ||
   process.env.EMBEDDING_API_KEY ||
   process.env.HF_API_KEY ||
   process.env.HUGGINGFACE_API_KEY ||
   process.env.OPENAI_API_KEY ||
   "";
+
 const embeddingProvider = optionalEnv(
   "EMBEDDING_PROVIDER",
-  process.env.HF_API_KEY || process.env.HUGGINGFACE_API_KEY
+  process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+    ? "gemini"
+    : process.env.HF_API_KEY || process.env.HUGGINGFACE_API_KEY
     ? "huggingface"
     : process.env.OPENAI_API_KEY
     ? "openai"
     : embeddingApiKey
-    ? "huggingface"
+    ? "gemini"
     : "local"
 );
+
 const defaultModel =
-  embeddingProvider === "openai"
+  embeddingProvider === "gemini"
+    ? "text-embedding-004"
+    : embeddingProvider === "openai"
     ? "text-embedding-3-small"
     : embeddingProvider === "huggingface"
     ? "sentence-transformers/all-MiniLM-L6-v2"

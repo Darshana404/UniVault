@@ -156,6 +156,134 @@ class OpenAIEmbeddingProvider implements EmbeddingProvider {
   }
 }
 
+// Google Gemini embedding provider (free tier via Google AI Studio)
+class GeminiEmbeddingProvider implements EmbeddingProvider {
+  private model: string;
+  private dimensions: number;
+
+  constructor() {
+    this.model = config.embedding.model || "text-embedding-004";
+    this.dimensions = config.embedding.dimensions || 384;
+  }
+
+  async generateEmbedding(text: string): Promise<EmbeddingResult> {
+    const apiKey = config.embedding.apiKey;
+
+    if (!apiKey) {
+      throw new Error(
+        "GEMINI_API_KEY is not configured. " +
+          "Set it in .env.local or Vercel environment variables to enable semantic search."
+      );
+    }
+
+    const prepared = prepareTextForEmbedding(text);
+
+    // Call Google Generative Language API embedContent
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:embedContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: `models/${this.model}`,
+        content: {
+          parts: [{ text: prepared }],
+        },
+        outputDimensionality: this.dimensions,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Gemini API request failed (${response.status}): ${errorText}`
+      );
+    }
+
+    const data = (await response.json()) as {
+      embedding?: { values: number[] };
+    };
+
+    const embedding = data.embedding?.values;
+
+    if (!embedding || embedding.length === 0) {
+      throw new Error("Gemini API returned empty embedding.");
+    }
+
+    return {
+      embedding,
+      model: this.model,
+      dimensions: embedding.length,
+    };
+  }
+
+  async generateBatchEmbeddings(texts: string[]): Promise<EmbeddingResult[]> {
+    const apiKey = config.embedding.apiKey;
+
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not configured.");
+    }
+
+    // Google Gemini batchEmbedContents endpoint accepts up to 100 texts at once
+    const BATCH_SIZE = 20;
+    const results: EmbeddingResult[] = [];
+
+    for (let i = 0; i < texts.length; i += BATCH_SIZE) {
+      const batch = texts.slice(i, i + BATCH_SIZE);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:batchEmbedContents?key=${apiKey}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requests: batch.map((text) => ({
+            model: `models/${this.model}`,
+            content: {
+              parts: [{ text: prepareTextForEmbedding(text) }],
+            },
+            outputDimensionality: this.dimensions,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        // Fallback to sequential generation if batch failed
+        const fallbackResults = await Promise.all(
+          batch.map((text) => this.generateEmbedding(text))
+        );
+        results.push(...fallbackResults);
+        continue;
+      }
+
+      const data = (await response.json()) as {
+        embeddings?: Array<{ values: number[] }>;
+      };
+
+      if (!data.embeddings || data.embeddings.length === 0) {
+        const fallbackResults = await Promise.all(
+          batch.map((text) => this.generateEmbedding(text))
+        );
+        results.push(...fallbackResults);
+        continue;
+      }
+
+      for (const item of data.embeddings) {
+        results.push({
+          embedding: item.values,
+          model: this.model,
+          dimensions: item.values.length,
+        });
+      }
+    }
+
+    return results;
+  }
+}
+
 // Hugging Face Inference API embedding provider (free tier)
 class HuggingFaceEmbeddingProvider implements EmbeddingProvider {
   private model: string;
@@ -248,6 +376,11 @@ export function getEmbeddingProvider(): EmbeddingProvider {
   const provider = config.embedding.provider;
 
   switch (provider) {
+    case "gemini":
+      if (!config.embedding.apiKey) {
+        return new LocalEmbeddingProvider();
+      }
+      return new GeminiEmbeddingProvider();
     case "huggingface":
       if (!config.embedding.apiKey) {
         return new LocalEmbeddingProvider();
@@ -263,7 +396,7 @@ export function getEmbeddingProvider(): EmbeddingProvider {
       return new OpenAIEmbeddingProvider();
     default:
       if (config.embedding.apiKey) {
-        return new HuggingFaceEmbeddingProvider();
+        return new GeminiEmbeddingProvider();
       }
       return new LocalEmbeddingProvider();
   }

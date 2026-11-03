@@ -6,11 +6,11 @@ ADD COLUMN IF NOT EXISTS download_count INTEGER DEFAULT 0 NOT NULL,
 ADD COLUMN IF NOT EXISTS rating_avg NUMERIC(3, 2) DEFAULT 0.00 NOT NULL,
 ADD COLUMN IF NOT EXISTS rating_count INTEGER DEFAULT 0 NOT NULL;
 
--- 2. Create document_ratings table
+-- 2. Create document_ratings table referencing public.users
 CREATE TABLE IF NOT EXISTS document_ratings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     rating SMALLINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -23,32 +23,6 @@ CREATE INDEX IF NOT EXISTS idx_document_ratings_user_id ON document_ratings(user
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE document_ratings ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies
--- Allow anyone authenticated to read ratings
-CREATE POLICY "Allow authenticated read ratings"
-ON document_ratings FOR SELECT
-TO authenticated
-USING (true);
-
--- Allow authenticated users to insert their own rating
-CREATE POLICY "Allow user to rate"
-ON document_ratings FOR INSERT
-TO authenticated
-WITH CHECK (auth.uid() = user_id);
-
--- Allow users to update their own rating
-CREATE POLICY "Allow user to update own rating"
-ON document_ratings FOR UPDATE
-TO authenticated
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
-
--- Allow users to delete their own rating
-CREATE POLICY "Allow user to delete own rating"
-ON document_ratings FOR DELETE
-TO authenticated
-USING (auth.uid() = user_id);
 
 -- 3. Trigger function to keep rating_avg and rating_count updated on documents
 CREATE OR REPLACE FUNCTION update_document_rating_stats()
@@ -70,12 +44,19 @@ FOR EACH ROW
 EXECUTE FUNCTION update_document_rating_stats();
 
 -- 4. RPC to safely increment download count
-CREATE OR REPLACE FUNCTION increment_download_count(doc_id UUID)
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION public.increment_download_count(doc_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     UPDATE documents
     SET download_count = download_count + 1
     WHERE id = doc_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
+-- Restrict RPC execution to service_role only (prevents unauthorized public increments)
+REVOKE EXECUTE ON FUNCTION public.increment_download_count(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.increment_download_count(UUID) TO service_role;

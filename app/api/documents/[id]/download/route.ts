@@ -45,21 +45,9 @@ export async function GET(
 
     // Increment download count (ignore failure gracefully if migration not run yet)
     try {
-      const { error: rpcError } = await supabase.rpc("increment_download_count", {
+      await supabase.rpc("increment_download_count", {
         doc_id: id,
       });
-      if (rpcError) {
-        // Fallback direct update if rpc doesn't exist
-        const docRecord = document as unknown as { download_count?: number };
-        await supabase
-          .from("documents")
-          .update({
-            download_count: docRecord.download_count
-              ? docRecord.download_count + 1
-              : 1,
-          })
-          .eq("id", id);
-      }
     } catch {
       // Non-critical, do not block download
     }

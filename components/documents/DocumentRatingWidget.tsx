@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { submitDocumentRating } from "@/lib/ratings";
 
 interface DocumentRatingWidgetProps {
@@ -18,30 +18,15 @@ export function DocumentRatingWidget({
   initialUserRating = null,
   onRatingUpdated,
 }: DocumentRatingWidgetProps) {
-  const [avg, setAvg] = useState(initialAvg);
-  const [count, setCount] = useState(initialCount);
-  const [userRating, setUserRating] = useState<number | null>(initialUserRating);
+  const [avgOverride, setAvgOverride] = useState<number | undefined>(undefined);
+  const [countOverride, setCountOverride] = useState<number | undefined>(undefined);
+  const [userRatingOverride, setUserRatingOverride] = useState<number | null | undefined>(undefined);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync state when props arrive asynchronously from API
-  useEffect(() => {
-    if (initialUserRating !== undefined) {
-      setUserRating(initialUserRating);
-    }
-  }, [initialUserRating]);
-
-  useEffect(() => {
-    if (initialAvg !== undefined) {
-      setAvg(initialAvg);
-    }
-  }, [initialAvg]);
-
-  useEffect(() => {
-    if (initialCount !== undefined) {
-      setCount(initialCount);
-    }
-  }, [initialCount]);
+  const avg = avgOverride ?? initialAvg;
+  const count = countOverride ?? initialCount;
+  const userRating = userRatingOverride === undefined ? initialUserRating : userRatingOverride;
 
   const hasRated = userRating !== null && userRating > 0;
   const activeRating = hoverRating !== null ? hoverRating : (userRating ?? 0);
@@ -173,4 +158,3 @@ export function DocumentRatingWidget({
     </div>
   );
 }
-

@@ -34,9 +34,29 @@ export default function DashboardPage() {
 
   return (
     <div className="home">
-      {/* Upload button placement */}
-      <div className="home__upload-container">
-        <Link href="/upload" className="btn btn--primary btn--upload">
+      {/* Upload button placement: full-width pink gradient bar */}
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+          width: "100%",
+          padding: "16px 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Link
+          href="/upload"
+          className="btn btn--primary btn--upload"
+          style={{
+            background: "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+            color: "#ffffff",
+            border: "none",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+            fontWeight: 700,
+          }}
+        >
           <svg
             width="16"
             height="16"
@@ -61,7 +81,11 @@ export default function DashboardPage() {
           <span className="section-header__label section-label">
             Recent Documents
           </span>
-          <Link href="/documents" className="section-header__link">
+          <Link
+            href="/documents"
+            className="section-header__link"
+            style={{ color: "#F4917A" }}
+          >
             <span>View all</span>
             <svg
               width="12"
@@ -69,6 +93,7 @@ export default function DashboardPage() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              style={{ color: "#F4917A" }}
             >
               <path
                 strokeLinecap="round"
@@ -107,7 +132,11 @@ export default function DashboardPage() {
           <span className="section-header__label section-label">
             Academic Categories
           </span>
-          <Link href="/categories" className="section-header__link">
+          <Link
+            href="/categories"
+            className="section-header__link"
+            style={{ color: "#F4917A" }}
+          >
             <span>View all</span>
             <svg
               width="12"
@@ -115,6 +144,7 @@ export default function DashboardPage() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              style={{ color: "#F4917A" }}
             >
               <path
                 strokeLinecap="round"
@@ -134,13 +164,20 @@ export default function DashboardPage() {
               className="card--category"
             >
               {/* Icon container: 32px square, background --color-bg, border --border, border-radius --radius-icon, icon colour --color-accent */}
-              <div className="card--category__icon">
+              <div
+                className="card--category__icon"
+                style={{
+                  background: "rgba(240,84,124,0.1)",
+                  border: "1px solid rgba(244,145,122,0.25)",
+                }}
+              >
                 <svg
                   width="16"
                   height="16"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  style={{ color: "#F4917A" }}
                 >
                   <path
                     strokeLinecap="round"

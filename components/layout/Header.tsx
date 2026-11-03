@@ -42,7 +42,9 @@ export function Header() {
       {/* 1. Logo left */}
       <Link href="/dashboard" className="navbar__logo logo">
         <span>Uni</span>
-        <span className="navbar__logo-accent">Vault</span>
+        <span className="navbar__logo-accent" style={{ color: "#F4917A" }}>
+          Vault
+        </span>
       </Link>
 
       {/* 2. Search bar center (flex 1) */}
@@ -91,6 +93,10 @@ export function Header() {
           type="button"
           onClick={() => setDropdownOpen((prev) => !prev)}
           className="avatar"
+          style={{
+            background: "linear-gradient(135deg, #F0547C, #F4917A)",
+            color: "#ffffff",
+          }}
           aria-label="User profile menu"
           aria-expanded={dropdownOpen}
         >
@@ -101,11 +107,34 @@ export function Header() {
           <div className="dropdown">
             <div className="dropdown__menu">
               {/* User header at top: 38px avatar, name 13px bold primary, email 11px secondary */}
-              <div className="dropdown__header">
-                <div className="avatar avatar--lg">{userInitial}</div>
+              <div
+                className="dropdown__header"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+                }}
+              >
+                <div
+                  className="avatar avatar--lg"
+                  style={{
+                    background: "rgba(255,255,255,0.25)",
+                    color: "#ffffff",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                  }}
+                >
+                  {userInitial}
+                </div>
                 <div className="dropdown__user-info">
-                  <span className="dropdown__user-name">{userName}</span>
-                  <span className="dropdown__user-email">
+                  <span
+                    className="dropdown__user-name"
+                    style={{ color: "#ffffff" }}
+                  >
+                    {userName}
+                  </span>
+                  <span
+                    className="dropdown__user-email"
+                    style={{ color: "#ffffff" }}
+                  >
                     {user?.email ?? "student@university.edu"}
                   </span>
                 </div>
@@ -117,13 +146,17 @@ export function Header() {
                 onClick={() => setDropdownOpen(false)}
                 className="dropdown__item"
               >
-                <span className="dropdown__item-icon">
+                <span
+                  className="dropdown__item-icon"
+                  style={{ color: "#F4917A" }}
+                >
                   <svg
                     width="16"
                     height="16"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: "#F4917A" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -141,13 +174,17 @@ export function Header() {
                 onClick={() => setDropdownOpen(false)}
                 className="dropdown__item"
               >
-                <span className="dropdown__item-icon">
+                <span
+                  className="dropdown__item-icon"
+                  style={{ color: "#F4917A" }}
+                >
                   <svg
                     width="16"
                     height="16"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: "#F4917A" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -165,13 +202,17 @@ export function Header() {
                 onClick={() => setDropdownOpen(false)}
                 className="dropdown__item"
               >
-                <span className="dropdown__item-icon">
+                <span
+                  className="dropdown__item-icon"
+                  style={{ color: "#F4917A" }}
+                >
                   <svg
                     width="16"
                     height="16"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: "#F4917A" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -189,13 +230,17 @@ export function Header() {
                 onClick={() => setDropdownOpen(false)}
                 className="dropdown__item"
               >
-                <span className="dropdown__item-icon">
+                <span
+                  className="dropdown__item-icon"
+                  style={{ color: "#F4917A" }}
+                >
                   <svg
                     width="16"
                     height="16"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: "#F4917A" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -213,13 +258,17 @@ export function Header() {
                 onClick={() => setDropdownOpen(false)}
                 className="dropdown__item"
               >
-                <span className="dropdown__item-icon">
+                <span
+                  className="dropdown__item-icon"
+                  style={{ color: "#F4917A" }}
+                >
                   <svg
                     width="16"
                     height="16"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: "#F4917A" }}
                   >
                     <path
                       strokeLinecap="round"

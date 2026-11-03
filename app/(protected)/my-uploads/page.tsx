@@ -38,7 +38,27 @@ export default function ProtectedMyUploadsPage() {
         <span>Back to home</span>
       </Link>
 
-      <h1 className="page-title">My Uploads</h1>
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+          padding: "20px 24px",
+          width: "100%",
+        }}
+      >
+        <div style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff" }}>
+          My Uploads
+        </div>
+        <div
+          style={{
+            fontSize: "13px",
+            color: "rgba(255,255,255,0.8)",
+            marginTop: "4px",
+          }}
+        >
+          Documents uploaded by you
+        </div>
+      </div>
 
       {loading ? (
         <div className="home__empty">
@@ -58,4 +78,3 @@ export default function ProtectedMyUploadsPage() {
     </div>
   );
 }
-

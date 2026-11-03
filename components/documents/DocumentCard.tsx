@@ -20,12 +20,19 @@ export function DocumentCard({
   return (
     <div className="card--pdf">
       {/* PDF icon block: 36×44px, background --color-bg, border --border, border-radius 4px */}
-      <div className="card--pdf__icon">
+      <div
+        className="card--pdf__icon"
+        style={{
+          background: "rgba(240,84,124,0.1)",
+          border: "1px solid rgba(244,145,122,0.25)",
+        }}
+      >
         <svg
           width="18"
           height="22"
           fill="currentColor"
           viewBox="0 0 20 20"
+          style={{ color: "#F4917A" }}
         >
           <path
             fillRule="evenodd"
@@ -63,7 +70,12 @@ export function DocumentCard({
       </div>
 
       {/* Badge: bottom-right absolute, background --color-accent, text --color-bg, 8px bold uppercase */}
-      <span className="card--pdf__badge badge">PDF</span>
+      <span
+        className="card--pdf__badge badge"
+        style={{ background: "#F4917A", color: "#ffffff" }}
+      >
+        PDF
+      </span>
     </div>
   );
 }

@@ -44,12 +44,16 @@
   max-width: min(100%, 700px);
   margin: 0 auto var(--spacing-gap);
   text-align: center;
+  font-size: clamp(26px, 3.8vw, 36px);
+  line-height: 1.25;
 }
 
 .hero-subtitle {
   max-width: min(100%, 550px);
   margin: 0 auto calc(var(--spacing-gap) * 1.5);
   text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .hero-cta {
@@ -74,6 +78,13 @@
 
 .card--feature__title {
   margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.card--feature .pdf-meta {
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .footer-nav {
@@ -82,7 +93,7 @@
 
 .landing-brand {
   font-family: Cambria, 'Book Antiqua', Palatino, Georgia, serif;
-  font-size: clamp(28px, 5vw, 42px);
+  font-size: clamp(34px, 5.5vw, 48px);
   font-weight: 700;
   color: #ffffff;
   margin: 12px 0 8px;

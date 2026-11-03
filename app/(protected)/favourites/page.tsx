@@ -38,7 +38,27 @@ export default function ProtectedFavouritesPage() {
         <span>Back to home</span>
       </Link>
 
-      <h1 className="page-title">Favourites</h1>
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+          padding: "20px 24px",
+          width: "100%",
+        }}
+      >
+        <div style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff" }}>
+          Favourites
+        </div>
+        <div
+          style={{
+            fontSize: "13px",
+            color: "rgba(255,255,255,0.8)",
+            marginTop: "4px",
+          }}
+        >
+          Documents you have saved
+        </div>
+      </div>
 
       {loading ? (
         <div className="home__empty">
@@ -58,4 +78,3 @@ export default function ProtectedFavouritesPage() {
     </div>
   );
 }
-

@@ -24,7 +24,27 @@ export default function ProtectedCategoriesPage() {
         <span>Back to home</span>
       </Link>
 
-      <h1 className="page-title">All Categories</h1>
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+          padding: "20px 24px",
+          width: "100%",
+        }}
+      >
+        <div style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff" }}>
+          All Categories
+        </div>
+        <div
+          style={{
+            fontSize: "13px",
+            color: "rgba(255,255,255,0.8)",
+            marginTop: "4px",
+          }}
+        >
+          Browse documents by subject
+        </div>
+      </div>
 
       <div className="categories-grid">
         {VALID_SUBJECTS.map((subject) => (
@@ -33,13 +53,20 @@ export default function ProtectedCategoriesPage() {
             href={`/documents?subject=${encodeURIComponent(subject)}`}
             className="category-card card--category"
           >
-            <div className="card--category__icon">
+            <div
+              className="card--category__icon"
+              style={{
+                background: "rgba(240,84,124,0.1)",
+                border: "1px solid rgba(244,145,122,0.25)",
+              }}
+            >
               <svg
                 width="16"
                 height="16"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
               >
                 <path
                   strokeLinecap="round"
@@ -58,4 +85,3 @@ export default function ProtectedCategoriesPage() {
     </div>
   );
 }
-

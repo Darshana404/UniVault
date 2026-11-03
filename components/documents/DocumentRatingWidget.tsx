@@ -36,9 +36,9 @@ export function DocumentRatingWidget({
     setIsSubmitting(true);
     try {
       const updated = await submitDocumentRating(documentId, ratingValue);
-      setAvg(updated.rating_avg);
-      setCount(updated.rating_count);
-      setUserRating(updated.user_rating);
+      setAvgOverride(updated.rating_avg);
+      setCountOverride(updated.rating_count);
+      setUserRatingOverride(updated.user_rating);
       if (onRatingUpdated) onRatingUpdated(updated);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to submit rating.");

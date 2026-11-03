@@ -3,7 +3,7 @@ import { z } from "zod";
 export const DocumentSearchSchema = z.object({
   q: z.string().max(200).optional(),
   subject: z.string().max(100).optional(),
-  sort: z.enum(["created_at", "title"]).optional().default("created_at"),
+  sort: z.enum(["created_at", "title", "download_count", "rating_avg"]).optional().default("created_at"),
   order: z.enum(["asc", "desc"]).optional().default("desc"),
   page: z.coerce.number().int().min(1).optional().default(1),
   limit: z.coerce.number().int().min(1).max(50).optional().default(20),
@@ -12,6 +12,10 @@ export const DocumentSearchSchema = z.object({
 
 export const DocumentIdSchema = z.object({
   id: z.string().uuid("Invalid document ID."),
+});
+
+export const RatingSchema = z.object({
+  rating: z.number().int().min(1, "Rating must be at least 1").max(5, "Rating cannot exceed 5"),
 });
 
 export const UploadMetadataSchema = z.object({

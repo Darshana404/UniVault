@@ -19,8 +19,26 @@ export interface Document {
   validation_status: ValidationStatus;
   validation_failure_reason: string | null;
   validated_at: string | null;
+  download_count?: number;
+  rating_avg?: number;
+  rating_count?: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface DocumentRating {
+  id: string;
+  document_id: string;
+  user_id: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DocumentRatingStats {
+  rating_avg: number;
+  rating_count: number;
+  user_rating: number | null;
 }
 
 export interface DocumentEmbedding {

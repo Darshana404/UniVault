@@ -5,7 +5,7 @@ import { VALID_SUBJECTS } from "../pdf/taxonomy";
 export interface KeywordSearchOptions {
   q?: string;
   subject?: string;
-  sort?: "created_at" | "title";
+  sort?: "created_at" | "title" | "download_count" | "rating_avg";
   order?: "asc" | "desc";
   page?: number;
   limit?: number;
@@ -49,6 +49,9 @@ export async function keywordSearch(
       validation_status,
       validation_failure_reason,
       validated_at,
+      download_count,
+      rating_avg,
+      rating_count,
       created_at,
       updated_at,
       users!uploader_id(email)
@@ -135,6 +138,9 @@ export async function getDocumentById(
       validation_status,
       validation_failure_reason,
       validated_at,
+      download_count,
+      rating_avg,
+      rating_count,
       created_at,
       updated_at,
       users!uploader_id(email)
@@ -178,6 +184,9 @@ export async function getDocumentByIdForOwner(
       validation_status,
       validation_failure_reason,
       validated_at,
+      download_count,
+      rating_avg,
+      rating_count,
       created_at,
       updated_at,
       users!uploader_id(email)

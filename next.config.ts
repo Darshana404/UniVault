@@ -58,6 +58,8 @@ const nextConfig: NextConfig = {
     "@huggingface/transformers",
     "onnxruntime-node",
     "sharp",
+    "pdfjs-dist",
+    "@napi-rs/canvas",
   ],
 
   // The local embedding model is loaded through fs at runtime, so it is not

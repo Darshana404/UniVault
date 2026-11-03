@@ -76,7 +76,7 @@ export default function LoginPage() {
               </svg>
             </div>
             <span className="logo">
-              Uni<span className="logo__accent">Vault</span>
+              Uni<span className="logo__accent" style={{ color: "#F4917A" }}>Vault</span>
             </span>
           </div>
           <h1 className="page-title">Sign in</h1>
@@ -98,6 +98,7 @@ export default function LoginPage() {
               autoComplete="email"
               autoFocus
               disabled={requestOTP.isPending}
+              className="focus:border-[#F4917A] focus:ring-[#F4917A]"
             />
 
             <Button
@@ -105,6 +106,13 @@ export default function LoginPage() {
               size="md"
               loading={requestOTP.isPending}
               className="btn--full"
+              style={{
+                background:
+                  "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+                color: "#ffffff",
+                border: "none",
+                boxShadow: "0 4px 14px rgba(240,84,124,0.45)",
+              }}
             >
               {requestOTP.isPending ? "Sending code…" : "Send verification code"}
             </Button>
@@ -112,7 +120,7 @@ export default function LoginPage() {
         </Card>
 
         {/* Security / Verification footer */}
-        <div className="auth-footer">
+        <div className="auth-footer" style={{ color: "#F4917A" }}>
           <svg
             width="12"
             height="12"
@@ -120,6 +128,7 @@ export default function LoginPage() {
             viewBox="0 0 24 24"
             strokeWidth="2"
             stroke="currentColor"
+            style={{ color: "#F4917A" }}
           >
             <path
               strokeLinecap="round"
@@ -127,7 +136,9 @@ export default function LoginPage() {
               d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
             />
           </svg>
-          <span>Restricted to authorized university domains</span>
+          <span style={{ color: "#F4917A" }}>
+            Restricted to authorized university domains
+          </span>
         </div>
       </div>
     </main>

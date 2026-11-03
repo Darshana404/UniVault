@@ -106,24 +106,57 @@ export default function DocumentDetailPage({
       </Link>
 
       {/* 1. File preview block */}
-      <div className="pdf-detail__preview">
+      <div
+        className="pdf-detail__preview"
+        style={{
+          background: "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+        }}
+      >
         <div className="pdf-detail__preview-header">
           <div className="pdf-detail__preview-info">
             <div className="pdf-detail__badges">
-              <span className="badge">{document.subject}</span>
-              <span className="badge badge--accent">Approved</span>
+              <span
+                className="badge"
+                style={{
+                  background: "rgba(255,255,255,0.2)",
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  color: "#ffffff",
+                }}
+              >
+                {document.subject}
+              </span>
+              <span
+                className="badge badge--accent"
+                style={{
+                  background: "rgba(255,255,255,0.9)",
+                  color: "#F0547C",
+                }}
+              >
+                Approved
+              </span>
             </div>
-            <h1 className="pdf-detail__title page-title">
+            <h1
+              className="pdf-detail__title page-title"
+              style={{ color: "#ffffff" }}
+            >
               {document.title}
             </h1>
           </div>
 
-          <div className="pdf-detail__icon-box">
+          <div
+            className="pdf-detail__icon-box"
+            style={{
+              background: "rgba(255,255,255,0.2)",
+              border: "1px solid rgba(255,255,255,0.4)",
+              color: "#ffffff",
+            }}
+          >
             <svg
               width="18"
               height="22"
               fill="currentColor"
               viewBox="0 0 20 20"
+              style={{ color: "#ffffff" }}
             >
               <path
                 fillRule="evenodd"
@@ -147,6 +180,7 @@ export default function DocumentDetailPage({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
               >
                 <path
                   strokeLinecap="round"
@@ -172,6 +206,7 @@ export default function DocumentDetailPage({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
               >
                 <path
                   strokeLinecap="round"
@@ -197,6 +232,7 @@ export default function DocumentDetailPage({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
               >
                 <path
                   strokeLinecap="round"
@@ -223,6 +259,7 @@ export default function DocumentDetailPage({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
               >
                 <path
                   strokeLinecap="round"
@@ -257,6 +294,12 @@ export default function DocumentDetailPage({
           type="button"
           onClick={handleDownload}
           className="btn btn--primary"
+          style={{
+            background: "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+            color: "#ffffff",
+            border: "none",
+            boxShadow: "0 4px 14px rgba(240,84,124,0.45)",
+          }}
         >
           <svg
             width="16"
@@ -285,9 +328,10 @@ export default function DocumentDetailPage({
           <svg
             width="18"
             height="18"
-            fill={isFavourite ? "var(--color-accent)" : "none"}
+            fill={isFavourite ? "#F0547C" : "none"}
             stroke="currentColor"
             viewBox="0 0 24 24"
+            style={{ color: "#F0547C" }}
           >
             <path
               strokeLinecap="round"

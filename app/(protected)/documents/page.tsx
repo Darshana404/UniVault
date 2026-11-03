@@ -128,28 +128,44 @@ function DocumentsContent() {
   return (
     <div className="flex flex-col gap-4">
       {/* Page header */}
-      <div>
-        <h1 className="page-title">
-          {params.subject ? `${params.subject} Documents` : "Document Library"}
-        </h1>
-        <p className="pdf-meta mt-1">
-          {params.subject ? (
-            <span>
-              Showing academic resources categorized under{" "}
-              <strong className="text-white">{params.subject}</strong>.{" "}
-              <button
-                type="button"
-                onClick={() => handleSubject("")}
-                className="underline text-teal-400 hover:text-teal-300 ml-1 cursor-pointer"
-              >
-                Clear filter
-              </button>
-            </span>
-          ) : (
-            "Browse and search academic resources shared by your peers."
-          )}
-        </p>
-      </div>
+      {params.subject ? (
+        <div>
+          <h1 className="page-title">{`${params.subject} Documents`}</h1>
+          <p className="pdf-meta mt-1">
+            Showing academic resources categorized under{" "}
+            <strong className="text-white">{params.subject}</strong>.{" "}
+            <button
+              type="button"
+              onClick={() => handleSubject("")}
+              className="underline text-teal-400 hover:text-teal-300 ml-1 cursor-pointer"
+            >
+              Clear filter
+            </button>
+          </p>
+        </div>
+      ) : (
+        <div
+          style={{
+            background:
+              "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+            padding: "20px 24px",
+            width: "100%",
+          }}
+        >
+          <div style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff" }}>
+            Document Library
+          </div>
+          <div
+            style={{
+              fontSize: "13px",
+              color: "rgba(255,255,255,0.8)",
+              marginTop: "4px",
+            }}
+          >
+            Browse and search academic resources shared by your peers.
+          </div>
+        </div>
+      )}
 
       {/* Search and filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -164,84 +180,79 @@ function DocumentsContent() {
         <select
           value={params.subject ?? ""}
           onChange={(e) => handleSubject(e.target.value)}
+          aria-label="Filter by subject"
           className="select"
         >
-          <option value="">All subjects</option>
-          {(subjects ?? []).map((s) => (
+          <option value="">All Subjects</option>
+          {subjects?.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
           ))}
         </select>
 
-        {/* Only show sort when not in semantic mode */}
-        {!useSemanticMode && (
-          <select
-            value={`${params.sort ?? "created_at"}-${params.order ?? "desc"}`}
-            onChange={handleSort}
-            className="select"
-          >
-            <option value="created_at-desc">Newest first</option>
-            <option value="created_at-asc">Oldest first</option>
-            <option value="title-asc">Title A–Z</option>
-            <option value="title-desc">Title Z–A</option>
-          </select>
-        )}
+        <select
+          value={`${paginationAndSort.sort}-${paginationAndSort.order}`}
+          onChange={handleSort}
+          aria-label="Sort order"
+          className="select"
+        >
+          <option value="created_at-desc">Newest First</option>
+          <option value="created_at-asc">Oldest First</option>
+          <option value="title-asc">Title (A–Z)</option>
+          <option value="title-desc">Title (Z–A)</option>
+        </select>
       </div>
 
-      {/* Semantic search toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Toggle button */}
-          <button
-            type="button"
-            onClick={() => setUseSemanticMode((v) => !v)}
-            className={`toggle-switch ${useSemanticMode ? "toggle-switch--active" : ""}`}
-            role="switch"
-            aria-checked={useSemanticMode}
-            aria-label="Toggle semantic search"
-          >
-            <span className="toggle-switch__thumb" />
-          </button>
-          <span className="pdf-meta">
-            Semantic search
-            {useSemanticMode && queryText && (
-              <span className="logo__accent">
-                {queryText.length < 3
-                  ? " — type 3+ characters"
-                  : searchType === "semantic"
-                  ? " — AI content-matched"
-                  : " — using keyword fallback"}
-              </span>
-            )}
+      {/* Semantic search toggle banner */}
+      <div className="bg-slate-800/60 border border-slate-700/60 rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+            AI Search
+          </span>
+          <span className="text-xs text-slate-300">
+            {useSemanticMode
+              ? "Semantic search enabled — finds documents by topic meaning"
+              : "Keyword search enabled — finds exact text matches"}
           </span>
         </div>
 
-        {/* Results count */}
-        {!isLoading && data && (
-          <p className="pdf-meta">
-            {data.pagination.total === 0
-              ? "No documents found"
-              : `${data.pagination.total} result${
-                  data.pagination.total === 1 ? "" : "s"
-                }`}
-            {params.q && (
-              <span>
-                {" "}for <span className="logo__accent">&quot;{params.q}&quot;</span>
-              </span>
-            )}
-          </p>
-        )}
+        <button
+          type="button"
+          onClick={() => setUseSemanticMode((prev) => !prev)}
+          className={`text-xs px-3 py-1 rounded transition-colors font-medium ${
+            useSemanticMode
+              ? "bg-teal-500 text-slate-900 font-semibold"
+              : "bg-slate-700 hover:bg-slate-600 text-slate-200"
+          }`}
+        >
+          {useSemanticMode ? "Switch to Keyword Search" : "Enable Semantic Search"}
+        </button>
       </div>
 
-      {/* Fallback notice */}
-      {fallbackReason && (
-        <div className="card">
-          <p className="pdf-meta text-yellow-400">{fallbackReason}</p>
+      {/* Search mode indicators */}
+      {isSemanticActive && !isLoading && (
+        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+          <span>
+            {searchType === "semantic" ? (
+              <span className="text-teal-400">
+                ✨ Showing semantic search results for &quot;{queryText}&quot;
+              </span>
+            ) : fallbackReason === "gemini_unavailable" ? (
+              <span className="text-amber-400">
+                ⚠️ Semantic search unavailable, fell back to keyword search
+              </span>
+            ) : null}
+          </span>
+          {data && "total" in data && (
+            <span>
+              {Number(data.total)} {data.total === 1 ? "result" : "results"}
+            </span>
+          )}
         </div>
       )}
 
-      {/* Document list */}
+      {/* Documents List */}
       <DocumentList
         documents={data?.data ?? []}
         isLoading={isLoading}
@@ -252,7 +263,7 @@ function DocumentsContent() {
       />
 
       {/* Pagination */}
-      {data?.pagination && (
+      {data && "pagination" in data && (
         <Pagination
           pagination={data.pagination}
           onPageChange={handlePageChange}
@@ -267,7 +278,7 @@ export default function DocumentsPage() {
     <Suspense
       fallback={
         <div className="home__empty">
-          <Spinner size="md" />
+          <Spinner size="lg" />
         </div>
       }
     >

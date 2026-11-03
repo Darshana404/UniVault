@@ -100,8 +100,8 @@ export function UploadForm() {
     <form onSubmit={handleSubmit} className="auth-form">
       {/* File drop zone */}
       <div className="form-field">
-        <label className="form-field__label">
-          PDF File
+        <label className="form-field__label" style={{ color: "#F4917A" }}>
+          PDF FILE
         </label>
         <div
           onDrop={handleDrop}
@@ -123,12 +123,19 @@ export function UploadForm() {
 
           {file ? (
             <div className="auth-brand">
-              <div className="dropzone__icon">
+              <div
+                className="dropzone__icon"
+                style={{
+                  background: "rgba(240,84,124,0.1)",
+                  border: "1px solid rgba(244,145,122,0.25)",
+                }}
+              >
                 <svg
                   width="20"
                   height="20"
                   fill="currentColor"
                   viewBox="0 0 20 20"
+                  style={{ color: "#F4917A" }}
                 >
                   <path
                     fillRule="evenodd"
@@ -139,17 +146,26 @@ export function UploadForm() {
               </div>
               <p className="card__name">{file.name}</p>
               <p className="pdf-meta">{formatFileSize(file.size)}</p>
-              <p className="section-label">Click to change file</p>
+              <p className="section-label" style={{ color: "#F4917A" }}>
+                Click to change file
+              </p>
             </div>
           ) : (
             <div className="auth-brand">
-              <div className="dropzone__icon">
+              <div
+                className="dropzone__icon"
+                style={{
+                  background: "rgba(240,84,124,0.1)",
+                  border: "1px solid rgba(244,145,122,0.25)",
+                }}
+              >
                 <svg
                   width="20"
                   height="20"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  style={{ color: "#F4917A" }}
                 >
                   <path
                     strokeLinecap="round"
@@ -160,7 +176,10 @@ export function UploadForm() {
                 </svg>
               </div>
               <p className="dropzone__text">
-                <span className="section-label">Click to upload</span> or drag and drop
+                <span className="section-label" style={{ color: "#F4917A" }}>
+                  CLICK TO UPLOAD
+                </span>{" "}
+                or drag and drop
               </p>
               <p className="dropzone__subtext">
                 PDF only · {formatFileSize(MIN_FILE_SIZE)} – {formatFileSize(MAX_FILE_SIZE)}
@@ -177,23 +196,27 @@ export function UploadForm() {
       </div>
 
       {/* Title */}
-      <Input
-        label="Title"
-        type="text"
-        placeholder="e.g. Calculus Notes — Chapter 5"
-        value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
-          setErrors((prev) => ({ ...prev, title: "" }));
-        }}
-        error={errors.title}
-        disabled={upload.isPending}
-      />
+      <div className="form-field">
+        <label className="form-field__label" style={{ color: "#F4917A" }}>
+          TITLE
+        </label>
+        <Input
+          type="text"
+          placeholder="e.g. Calculus Notes — Chapter 5"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setErrors((prev) => ({ ...prev, title: "" }));
+          }}
+          error={errors.title}
+          disabled={upload.isPending}
+        />
+      </div>
 
       {/* Subject */}
       <div className="form-field">
-        <label className="form-field__label">
-          Subject
+        <label className="form-field__label" style={{ color: "#F4917A" }}>
+          SUBJECT
         </label>
         <select
           value={subject}
@@ -220,8 +243,8 @@ export function UploadForm() {
 
       {/* Description */}
       <div className="form-field">
-        <label className="form-field__label">
-          Description (optional)
+        <label className="form-field__label" style={{ color: "#F4917A" }}>
+          DESCRIPTION OPTIONAL
         </label>
         <textarea
           value={description}
@@ -239,8 +262,8 @@ export function UploadForm() {
 
       {/* Validation rules reminder */}
       <div className="card">
-        <p className="form-field__label">
-          Validation requirements
+        <p className="form-field__label" style={{ color: "#F4917A" }}>
+          VALIDATION REQUIREMENTS
         </p>
         <ul className="home__section">
           {[
@@ -250,7 +273,7 @@ export function UploadForm() {
             "Content must match the selected subject",
           ].map((rule) => (
             <li key={rule} className="pdf-meta flex-row-item">
-              <span className="logo__accent">✓</span>
+              <span className="logo__accent" style={{ color: "#F4917A" }}>✓</span>
               <span>{rule}</span>
             </li>
           ))}
@@ -278,6 +301,13 @@ export function UploadForm() {
         size="lg"
         loading={upload.isPending}
         className="btn--full"
+        style={{
+          background:
+            "linear-gradient(135deg, #F0547C 0%, #F4917A 55%, #F9C4A8 100%)",
+          color: "#ffffff",
+          border: "none",
+          boxShadow: "0 4px 14px rgba(240,84,124,0.45)",
+        }}
       >
         {upload.isPending ? "Uploading and validating…" : "Upload Document"}
       </Button>

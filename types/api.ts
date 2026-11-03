@@ -16,7 +16,7 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 export interface DocumentSearchParams {
   q?: string;
   subject?: string;
-  sort?: "created_at" | "title";
+  sort?: "created_at" | "title" | "download_count" | "rating_avg";
   order?: "asc" | "desc";
   page?: number;
   limit?: number;

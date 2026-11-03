@@ -9,6 +9,8 @@ import { useCurrentUser } from "@/hooks/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatFileSize, formatDate } from "@/lib/utils/format";
 import { isFavourited, addFavourite, removeFavourite } from "@/lib/favourites";
+import { DocumentRatingWidget } from "@/components/documents/DocumentRatingWidget";
+import { getDocumentRating } from "@/lib/ratings";
 
 export default function DocumentDetailPage({
   params,
@@ -21,10 +23,18 @@ export default function DocumentDetailPage({
   const { data: document, isLoading, error } = useDocument(id);
   const deleteDocument = useDeleteDocument();
   const [isFavourite, setIsFavourite] = useState(false);
+  const [ratingStats, setRatingStats] = useState<{
+    rating_avg: number;
+    rating_count: number;
+    user_rating: number | null;
+  } | null>(null);
 
   useEffect(() => {
     if (id) {
       isFavourited(id).then(setIsFavourite).catch(console.error);
+      getDocumentRating(id)
+        .then((data) => setRatingStats(data))
+        .catch(console.error);
     }
   }, [id]);
 
@@ -248,6 +258,32 @@ export default function DocumentDetailPage({
           </div>
         </div>
 
+        <div className="meta-card">
+          <span className="meta-card__label meta-label">Downloads</span>
+          <div className="meta-card__content">
+            <span className="meta-card__icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ color: "#F4917A" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+            </span>
+            <span className="meta-card__value">
+              {document.download_count ?? 0}
+            </span>
+          </div>
+        </div>
+
         {/* Uploader email card spans full width (grid-column 1 / -1) */}
         <div className="meta-card meta-card--full">
           <span className="meta-card__label meta-label">Uploaded by</span>
@@ -274,6 +310,15 @@ export default function DocumentDetailPage({
             </span>
           </div>
         </div>
+
+        {/* Rating widget card */}
+        <DocumentRatingWidget
+          documentId={id}
+          initialAvg={ratingStats?.rating_avg ?? Number(document.rating_avg ?? 0)}
+          initialCount={ratingStats?.rating_count ?? Number(document.rating_count ?? 0)}
+          initialUserRating={ratingStats?.user_rating ?? null}
+          onRatingUpdated={(newStats) => setRatingStats(newStats)}
+        />
       </div>
 
       {/* 3. Description block */}

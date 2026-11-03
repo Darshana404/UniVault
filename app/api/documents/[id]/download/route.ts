@@ -43,6 +43,15 @@ export async function GET(
       300
     );
 
+    // Increment download count (ignore failure gracefully if migration not run yet)
+    try {
+      await supabase.rpc("increment_download_count", {
+        doc_id: id,
+      });
+    } catch {
+      // Non-critical, do not block download
+    }
+
     return successResponse({
       url: signedUrl,
       filename: `${document.title}.pdf`,
